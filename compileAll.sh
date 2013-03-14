@@ -18,7 +18,7 @@ fi
 echo -ne "Compiling the unit tests...\n"
 
 #compile all the tests
-if javac -classpath ./:./build/:junit-4.10.jar ./test/*.java;
+if javac -classpath ./:./build/:junit-4.10.jar -d ./test_build/ ./test_src/*.java;
 	then
 		echo -ne $SUCCESS
 	else
@@ -30,7 +30,9 @@ echo -ne "Running the unit tests...\n\n"
 echo -ne "-----------------------------\n"
 
 #run all unit tests
-java -classpath ./:./build:./test/:junit-4.10.jar org.junit.runner.JUnitCore FanoronaGameBoardTest
+#TODO: make test names generic based on all files in the directory
+# probably need regular expressions and variable
+java -classpath ./:./build:./test_build/:junit-4.10.jar org.junit.runner.JUnitCore FanoronaGameBoardTest
 
 echo -ne "-----------------------------\n"
 echo -ne "\n\tDone!\n"
