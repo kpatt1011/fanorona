@@ -96,10 +96,56 @@ class FanoronaGameBoard
 		return false;
 	}
 
+	public boolean captureMoveExists()
+	{
+	    //TODO: check if a capture move exists, if so force piece to make a capture
+	    return false;
+	}
+
 	public boolean isValidMove(Coordinate start, Coordinate end )
 	{
 		//TODO: create valid move logic
-		return true;
+		if(!captureMoveExists())
+        {
+        //if the starting x coordinate is 0,2,4,6 or 8, can move diagonal or up down left right
+		if(start.x % 2 ==0 || start.x==0)
+        {
+        if((end.x)-1 == start.x || (end.x)+1==start.x || (end.x)==(start.x))
+        {
+        if((end.y)-1 == start.y ||(end.y)+1 == start.y || (end.y)== start.y  )
+        {
+        if((end.x)>=0 && (end.x)<9 && (end.y)>=0 && (end.y)<5)
+        {
+         return true;
+        }
+        }
+        }
+        }
+		//if the starting x coordinate is 1,3,5,or 7 can only move up down left right
+		if((start.x)%2 ==1)
+        {
+        if((end.x)-1==(start.x) || (end.x)+1==(start.x))
+        {
+        if((end.y)==(start.y))
+        {
+        if((end.x)>=0 && (end.x)<9 && (end.y)>=0 && (end.y)<5)
+        {
+         return true;
+        }
+        }
+        } else if((end.x) == (start.x))
+        {
+        if((end.y)-1==(start.y) || (end.y)+1==(start.y))
+        {
+        if((end.x)>=0 && (end.x)<9 && (end.y)>=0 && (end.y)<5)
+        {
+         return true;
+        }
+        }
+        }
+        }
+		return false;
+        }
 	}
 
 	//ideally, return unmodifiable version of board
