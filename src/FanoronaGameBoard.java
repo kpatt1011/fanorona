@@ -105,7 +105,7 @@ class FanoronaGameBoard
 	public boolean isValidMove(Coordinate start, Coordinate end )
 	{
 		//TODO: create valid move logic
-		if(!captureMoveExists())
+		if(isEmptyAt(end))
         {
         //if the starting x coordinate is 0,2,4,6 or 8, can move diagonal or up down left right
 		if(start.x % 2 ==0 || start.x==0)
