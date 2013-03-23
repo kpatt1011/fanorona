@@ -1,4 +1,5 @@
 import java.util.Vector;
+import java.util.Iterator;
 import java.util.Collections;
 import java.util.List;
 import java.util.LinkedList;
@@ -169,6 +170,52 @@ class FanoronaGameBoard
 		return getPointAt(position).isOccupied();
 	}
 
+    public int boardEvaluation()
+    {
+     /* negative advantage means white is winning, 0 is neutral, positive means black is winning
+        NOTE: this function is called on the current gameboard, with the assumption that the gameboard
+     */
+     int advantage=0;
+     Iterator rowIterator= gameboard.iterator(); //iterates through each vector<point> object in the gameboard vector
+     while(rowIterator.hasNext())
+     {
+      Iterator columnIterator= rowIterator.next().iterator(); //iterates through each point object in the current column
+      while(columnIterator.hasNext())
+      {
+        //check each point for a black or white piece, make the appropriate increment to advantage
+        Point currentPoint = columnIterator.next();
+        String value = currentPoint.toString();
+        switch(value)
+        {
+        case "B":
+            advantage= advantage + 1;
+            break;
+        case "W":
+            advantage= advantage - 1;
+            break;
+        default:
+            break;
+
+        }
+      }
+
+     }
+         /*
+        for(black piece: gameboard)
+       {
+    for(valid move: currentBlackPiece)
+        {
+        if possible move is a capture move, +1
+        + 1 for every white piece that would be captured on that immediate move
+        (eventually)
+        if not capture move,
+        if mood would set up a capture move for white
+        -3
+        }
+        }
+        */
+        return advantage;
+    }
 	//prints out the board as an ASCII matrix
 	public String toString()
 	{
