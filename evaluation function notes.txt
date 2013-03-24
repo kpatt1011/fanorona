@@ -1,0 +1,17 @@
+int advantage=0; // negative advantage means white is winning, 0 is neutral, positive means black is winning 
+for (piece: gameboard)
+{ +1 for each black piece
+  -1 for each white piece
+}
+for(black piece: gameboard)
+{
+  for(valid move: currentBlackPiece)
+  {
+    if possible move is a capture move, +1
+	+ 1 for every white piece that would be captured on that immediate move
+	(eventually) 
+     if not capture move,
+	 if mood would set up a capture move for white
+	 -3
+  }
+ }
