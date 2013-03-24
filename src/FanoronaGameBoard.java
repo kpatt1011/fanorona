@@ -147,6 +147,7 @@ class FanoronaGameBoard
         }
 		return false;
         }
+		return false;
 	}
 
 	//ideally, return unmodifiable version of board
@@ -176,7 +177,7 @@ class FanoronaGameBoard
         NOTE: this function is called on the current gameboard, with the assumption that the gameboard
      */
      int advantage=0;
-     Iterator rowIterator= gameboard.iterator(); //iterates through each vector<point> object in the gameboard vector
+     Iterator rowIterator= gameBoard.iterator(); //iterates through each vector<point> object in the gameboard vector
      while(rowIterator.hasNext())
      {
       Iterator columnIterator= rowIterator.next().iterator(); //iterates through each point object in the current column
