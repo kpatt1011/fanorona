@@ -423,17 +423,18 @@ class FanoronaGameBoard
 		*/
 
 		int advantage=0;
-
 		ListIterator<LinkedList<Point>>  rowIterator= gameBoard.listIterator(); //iterates through each vector<point> object in the gameboard vector
+		LinkedList<Point> blackPieces=new LinkedList<Point>();
 		while(rowIterator.hasNext())
 		{
 			LinkedList<Point> currentRow = (LinkedList<Point>) rowIterator.next();
-			ListIterator<> columnIterator= .listIterator(); //iterates through each point object in the current column
+			ListIterator<Point> columnIterator= currentRow.listIterator(); //iterates through each point object in the current column
 			while(columnIterator.hasNext())
 			{
 				//check each point for a black or white piece, make the appropriate increment to advantage
+				
 				Point currentPoint = columnIterator.next();
-				String value = currentPoint.toString();
+				String value = currentPoint.toString("W", "B", "E");
 				switch(value)
 				{
 					case "B":
