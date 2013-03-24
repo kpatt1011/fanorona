@@ -70,8 +70,8 @@ public final class Point
 	{
 		switch(state)
 		{
-			case isOccupiedByBlack: return w;
-			case isOccupiedByWhite: return b;
+			case isOccupiedByBlack: return b;
+			case isOccupiedByWhite: return w;
 			case isEmpty:           return e;
 			default:                return "?";
 		}
