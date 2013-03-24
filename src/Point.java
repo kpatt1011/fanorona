@@ -28,16 +28,22 @@ public final class Point
 		return coordinate;
 	}
 
-	public Point( Coordinate coordinate )
+	public Point(Coordinate coordinate)
 	{
 		this.coordinate = coordinate;
 		this.state = State.isEmpty;
 	}
 
-	public Point( Coordinate coordinate, State state)
+	public Point(Coordinate coordinate, State state)
 	{
-		this.coordinate = coordinate;
+		this(coordinate);
 		this.state = state;
+	}
+
+	public Point(Point point)
+	{
+		this.coordinate = new Coordinate(point.coordinate);
+		this.state = point.state;
 	}
 
 	public boolean equals(Object that)
@@ -53,9 +59,20 @@ public final class Point
 	{
 		switch(state)
 		{
-			case isOccupiedByBlack: return "B";
-			case isOccupiedByWhite: return "W";
-			case isEmpty:           return "E";
+			case isOccupiedByBlack: return "●";
+			case isOccupiedByWhite: return "○";
+			case isEmpty:           return "▫";
+			default:                return "?";
+		}
+	}
+
+	public String toString(String w, String b, String e)
+	{
+		switch(state)
+		{
+			case isOccupiedByBlack: return w;
+			case isOccupiedByWhite: return b;
+			case isEmpty:           return e;
 			default:                return "?";
 		}
 	}

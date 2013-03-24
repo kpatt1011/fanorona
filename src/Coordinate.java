@@ -7,16 +7,19 @@ public final class Coordinate
 
 	public Coordinate(Integer x, Integer y)
 	{
-		this.pair = new Pair<Integer, Integer>(x,y);
-		this.x = pair.first;
-		this.y = pair.second;
+		this.pair = new Pair<Integer, Integer>(x.intValue(),y.intValue());
+		this.x = x.intValue();
+		this.y = y.intValue();
 	}
 
 	public Coordinate(Pair<Integer, Integer> pair)
 	{
-		this.pair = pair;
-		this.x = pair.first;
-		this.y = pair.second;
+		this(pair.first, pair.second);
+	}
+
+	public Coordinate(Coordinate coord)
+	{
+		this(coord.x, coord.y);
 	}
 
 	public boolean equals(Coordinate other)

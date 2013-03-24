@@ -9,13 +9,19 @@ public final class Pair<T1, T2>
 		this.second = second;
 	}
 
+	public Pair( Pair<T1, T2> pair)
+	{
+		this.first = pair.first;
+		this.second = pair.second;
+	}
+
 	public boolean equals(Pair<T1, T2> other)
 	{
 		if ( this == other )
 			return true;
 		if ( !(other instanceof Pair) )
 			return false;
-		Pair<T1, T2> otherP = (Pair<T1, T2>) other;
+		Pair<T1, T2> otherP = other;
 		return ( (otherP.first).equals(this.first) && (otherP.second).equals(this.second) );
 
 	}
