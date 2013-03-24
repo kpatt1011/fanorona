@@ -143,6 +143,7 @@ class FanoronaGameBoard
 		if (currentPlayer == Player.One)
 			return Player.Two;
 		else
+		
 			return Player.One;
 	}
 
@@ -422,11 +423,12 @@ class FanoronaGameBoard
 		*/
 
 		int advantage=0;
-/*
-		Iterator rowIterator= gameBoard.iterator(); //iterates through each vector<point> object in the gameboard vector
+
+		ListIterator<LinkedList<Point>>  rowIterator= gameBoard.listIterator(); //iterates through each vector<point> object in the gameboard vector
 		while(rowIterator.hasNext())
 		{
-			Iterator columnIterator= rowIterator.next().iterator(); //iterates through each point object in the current column
+			LinkedList<Point> currentRow = (LinkedList<Point>) rowIterator.next();
+			ListIterator<> columnIterator= .listIterator(); //iterates through each point object in the current column
 			while(columnIterator.hasNext())
 			{
 				//check each point for a black or white piece, make the appropriate increment to advantage
