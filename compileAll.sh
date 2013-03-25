@@ -36,3 +36,6 @@ java -classpath ./:./build:./test_build/:junit-4.10.jar org.junit.runner.JUnitCo
 
 echo -ne "-----------------------------\n"
 echo -ne "\n\tDone!\n"
+#javac -d .\build\ .\src\*.java
+#javac -classpath .\:.\build\:junit-4.10.jar -d .\test_build\ .\test_src\*.java
+#java -classpath .\:.\build:.\test_build\:junit-4.10.jar org.junit.runner.JUnitCore FanoronaGameBoardTest

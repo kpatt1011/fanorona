@@ -26,14 +26,14 @@ class MinimaxTree
     {
         ArrayList<? extends MinimaxNode> rootChildren = root.getChildren();
         
-        int currentValue = rootChildren.get(0).value();
+        int currentValue = rootChildren.get(0).getValue(root.getValue());
         int maxIndex = 0;
         int minIndex = 0;
         int maxValue = currentValue;
         int minValue = currentValue;
         for (int i = 1; i < rootChildren.size(); i++)
         {
-            currentValue = rootChildren.get(i).value();
+            currentValue = rootChildren.get(i).getValue(root.getValue());
 
             if (currentValue > maxValue)
             {
@@ -49,11 +49,17 @@ class MinimaxTree
 
         if (root.isMaxNode())
         {
-            return rootChildren.get(maxValue).getGameBoard();
+            return rootChildren.get(maxIndex).getGameBoard();
         }
         else
         {
-            return rootChildren.get(minValue).getGameBoard();
+            return rootChildren.get(minIndex).getGameBoard();
         }
+    }
+
+    void print ()
+    {
+        root.print();
+        System.out.println("\n");
     }
 }

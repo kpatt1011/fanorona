@@ -10,22 +10,35 @@ interface MinimaxNode
 
     boolean isLeaf ();
 
-    int value ();
+    public int evaluateValue (int parentVal);
+    public int getValue (int parentVal);
+    public int getValue ();
 
     public boolean isMaxNode ();
     public boolean isMinNode ();
+
+    public void print ();
 }
 
 class MinNode implements MinimaxNode
 {
     // DATA MEMBERS
-	private ArrayList<MaxNode> children;
+	private ArrayList<MaxNode> children = new ArrayList<MaxNode>();
     private Vector<Vector<Point>> gameBoard = new Vector<Vector<Point>>();
+    private int value;
 	
     // PUBLIC FUNCTIONS
 	public MinNode (Vector<Vector<Point>> newGameBoard)
 	{
 		gameBoard = newGameBoard;
+        value = Integer.MAX_VALUE;
+	}
+
+	public MinNode (Vector<Vector<Point>> newGameBoard, int depth)
+	{
+		gameBoard = newGameBoard;
+        value = Integer.MAX_VALUE;
+        populateChildren(depth);
 	}
 	
     public void populateChildren (int depth)
@@ -33,6 +46,16 @@ class MinNode implements MinimaxNode
         // get all possible board states from current moves
         // iterate across all of them and addChild()
         // if depth > 0, call populateChildren(depth - 1) on all children
+        if (depth > 0)
+        {
+            for (int i = 0; i < 3; i++)
+            {
+                Vector<Vector<Point>> blankBoard = new Vector<Vector<Point>>();
+                MaxNode newNode = new MaxNode(blankBoard, depth-1); 
+
+                children.add(newNode);
+            }
+        }
     }
 
     public ArrayList<MaxNode> getChildren ()
@@ -49,25 +72,46 @@ class MinNode implements MinimaxNode
 	{
 		return children.isEmpty();
 	}
-	
-	public int value ()
+
+	public int evaluateValue (int parentVal)
 	{
 		if (isLeaf())
 		{
 			// board evaluation function goes here
-			return 0;
+            value = 0;
+			return value;
 		}
 		else
 		{
-			int value = children.get(0).value();
-			for (int i = 0; i < children.size(); i++)
+			value = children.get(0).getValue(parentVal);
+			for (int i = 1; i < children.size(); i++)
 			{
-				value = Math.min(value, children.get(i).value());
+                value = Math.min(value, children.get(i).getValue(parentVal));
+                // alpha beta pruning
+                if (value < parentVal)
+                {
+                    return Integer.MIN_VALUE;
+                }
 			}
 			
 			return value;
 		}
 	}
+
+    public int getValue ()
+    {
+        evaluateValue(value);
+        return value;
+    }
+
+    public int getValue (int parentVal)
+    {
+        if (value == Integer.MAX_VALUE)
+        {
+            evaluateValue(parentVal);
+        }
+        return value;
+    }
 
     public boolean isMaxNode ()
     {
@@ -77,6 +121,27 @@ class MinNode implements MinimaxNode
     public boolean isMinNode ()
     {
         return true;
+    }
+
+    public void print ()
+    {
+        if (isLeaf())
+        {
+            System.out.format("%d", value);
+        }
+        else
+        {
+            System.out.format("%d(", value);
+            for (int i = 0; i < children.size(); i++)
+            {
+                children.get(i).print();
+                if (i != children.size()-1)
+                {
+                    System.out.print(", ");
+                }
+            }
+            System.out.print(")");
+        }
     }
 
     // HELPER FUNCTIONS
@@ -90,13 +155,22 @@ class MinNode implements MinimaxNode
 class MaxNode implements MinimaxNode
 {
     // DATA MEMBERS
-	private ArrayList<MinNode> children;
+	private ArrayList<MinNode> children = new ArrayList<MinNode>();
     private Vector<Vector<Point>> gameBoard = new Vector<Vector<Point>>();
+    private int value;
 	
     // PUBLIC FUNCTIONS
 	public MaxNode (Vector<Vector<Point>> newGameBoard)
 	{
         gameBoard = newGameBoard;
+        value = Integer.MIN_VALUE;
+    }
+	
+	public MaxNode (Vector<Vector<Point>> newGameBoard, int depth)
+	{
+        gameBoard = newGameBoard;
+        value = Integer.MIN_VALUE;
+        populateChildren(depth);
     }
 	
     public void populateChildren (int depth)
@@ -104,6 +178,16 @@ class MaxNode implements MinimaxNode
         // get all possible board states from current moves
         // iterate across all of them and addChild()
         // if depth > 0, call populateChildren(depth - 1) on all children
+        if (depth > 0)
+        {
+            for (int i = 0; i < 3; i++)
+            {
+                Vector<Vector<Point>> blankBoard = new Vector<Vector<Point>>();
+                MinNode newNode = new MinNode(blankBoard, depth-1); 
+
+                children.add(newNode);
+            }
+        }
     }
 	
     public ArrayList<MinNode> getChildren ()
@@ -120,26 +204,47 @@ class MaxNode implements MinimaxNode
 	{
 		return children.isEmpty();
 	}
-	
-	public int value ()
+
+	public int evaluateValue (int parentVal)
 	{
 		if (isLeaf())
 		{
 			// board evaluation function goes here
-			return 0;
+            value = 0;
+			return value;
 		}
 		else
 		{
-			int value = children.get(0).value();
-			for (int i = 0; i < children.size(); i++)
+			value = children.get(0).getValue(parentVal);
+			for (int i = 1; i < children.size(); i++)
 			{
-				value = Math.max(value, children.get(i).value());
+                value = Math.max(value, children.get(i).getValue(parentVal));
+                // alpha beta pruning
+                if (value > parentVal)
+                {
+                    return Integer.MAX_VALUE;
+                }
 			}
 			
 			return value;
 		}
 	}
 
+    public int getValue ()
+    {
+        evaluateValue(value);
+        return value;
+    }
+
+    public int getValue (int parentVal)
+    {
+        if (value == Integer.MIN_VALUE)
+        {
+            evaluateValue(parentVal);
+        }
+        return value;
+    }
+	
     public boolean isMaxNode ()
     {
         return true;
@@ -148,6 +253,27 @@ class MaxNode implements MinimaxNode
     public boolean isMinNode ()
     {
         return false;
+    }
+
+    public void print ()
+    {
+        if (isLeaf())
+        {
+            System.out.format("%d", value);
+        }
+        else
+        {
+            System.out.format("%d(", value);
+            for (int i = 0; i < children.size(); i++)
+            {
+                children.get(i).print();
+                if (i != children.size()-1)
+                {
+                    System.out.print(", ");
+                }
+            }
+            System.out.print(")");
+        }
     }
 
     // HELPER FUNCTIONS
