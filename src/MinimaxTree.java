@@ -22,7 +22,7 @@ class MinimaxTree
         root.populateChildren (depth);
     }
 
-    LinkedList<LinkedList<Point>> getIdealMove ()
+    FanoronaGameBoard getIdealMove ()
     {
         ArrayList<? extends MinimaxNode> rootChildren = root.getChildren();
         

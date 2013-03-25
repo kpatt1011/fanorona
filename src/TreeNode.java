@@ -6,7 +6,7 @@ interface MinimaxNode
 
     ArrayList<? extends MinimaxNode> getChildren ();
 
-    public LinkedList<LinkedList<Point>> getGameBoard ();
+    public FanoronaGameBoard getGameBoard ();
 
     boolean isLeaf ();
 
@@ -24,17 +24,17 @@ class MinNode implements MinimaxNode
 {
     // DATA MEMBERS
 	private ArrayList<MaxNode> children = new ArrayList<MaxNode>();
-    private LinkedList<LinkedList<Point>> gameBoard = new LinkedList<LinkedList<Point>>();
+    private FanoronaGameBoard gameBoard;
     private int value;
 	
     // PUBLIC FUNCTIONS
-	public MinNode (LinkedList<LinkedList<Point>> newGameBoard)
+    public MinNode (FanoronaGameBoard newGameBoard)
 	{
-		gameBoard = newGameBoard;
+		gameBoard = new FanoronaGameBoard(newGameBoard);
         value = Integer.MAX_VALUE;
 	}
 
-	public MinNode (LinkedList<LinkedList<Point>> newGameBoard, int depth)
+    public MinNode (FanoronaGameBoard newGameBoard, int depth)
 	{
 		gameBoard = newGameBoard;
         value = Integer.MAX_VALUE;
@@ -46,14 +46,16 @@ class MinNode implements MinimaxNode
         // get all possible board states from current moves
         // iterate across all of them and addChild()
         // if depth > 0, call populateChildren(depth - 1) on all children
-        if (depth > 0)
+        if (depth >= 0)
         {
-            for (int i = 0; i < 3; i++)
+            List<FanoronaGameBoard.Move> childMoves = gameBoard.getAllPossibleMoves();
+            for (int i = 0; i < childMoves.size(); i++)
             {
-                LinkedList<LinkedList<Point>> blankBoard = new LinkedList<LinkedList<Point>>();
-                MaxNode newNode = new MaxNode(blankBoard, depth-1); 
+                FanoronaGameBoard childBoard = new FanoronaGameBoard(gameBoard);
+                childBoard.move(childMoves.get(i));
+                MaxNode childNode = new MaxNode(childBoard, depth-1);
 
-                children.add(newNode);
+                children.add(childNode);
             }
         }
     }
@@ -63,7 +65,7 @@ class MinNode implements MinimaxNode
         return children;
     }
 
-    public LinkedList<LinkedList<Point>> getGameBoard ()
+    public FanoronaGameBoard getGameBoard ()
     {
         return gameBoard;
     }
@@ -78,7 +80,7 @@ class MinNode implements MinimaxNode
 		if (isLeaf())
 		{
 			// board evaluation function goes here
-            value = 0;
+            value = gameBoard.boardEvaluation();
 			return value;
 		}
 		else
@@ -156,19 +158,19 @@ class MaxNode implements MinimaxNode
 {
     // DATA MEMBERS
 	private ArrayList<MinNode> children = new ArrayList<MinNode>();
-    private LinkedList<LinkedList<Point>> gameBoard = new LinkedList<LinkedList<Point>>();
+    private FanoronaGameBoard gameBoard;
     private int value;
 	
     // PUBLIC FUNCTIONS
-	public MaxNode (LinkedList<LinkedList<Point>> newGameBoard)
+	public MaxNode (FanoronaGameBoard newGameBoard)
 	{
-        gameBoard = newGameBoard;
+        gameBoard = new FanoronaGameBoard(newGameBoard);
         value = Integer.MIN_VALUE;
     }
 	
-	public MaxNode (LinkedList<LinkedList<Point>> newGameBoard, int depth)
+	public MaxNode (FanoronaGameBoard newGameBoard, int depth)
 	{
-        gameBoard = newGameBoard;
+        gameBoard = new FanoronaGameBoard(newGameBoard);
         value = Integer.MIN_VALUE;
         populateChildren(depth);
     }
@@ -178,14 +180,16 @@ class MaxNode implements MinimaxNode
         // get all possible board states from current moves
         // iterate across all of them and addChild()
         // if depth > 0, call populateChildren(depth - 1) on all children
-        if (depth > 0)
+        if (depth >= 0)
         {
-            for (int i = 0; i < 3; i++)
+            List<FanoronaGameBoard.Move> childMoves = gameBoard.getAllPossibleMoves();
+            for (int i = 0; i < childMoves.size(); i++)
             {
-                LinkedList<LinkedList<Point>> blankBoard = new LinkedList<LinkedList<Point>>();
-                MinNode newNode = new MinNode(blankBoard, depth-1); 
+                FanoronaGameBoard childBoard = new FanoronaGameBoard(gameBoard);
+                childBoard.move(childMoves.get(i));
+                MinNode childNode = new MinNode(childBoard, depth-1);
 
-                children.add(newNode);
+                children.add(childNode);
             }
         }
     }
@@ -195,7 +199,7 @@ class MaxNode implements MinimaxNode
         return children;
     }
 	
-    public LinkedList<LinkedList<Point>> getGameBoard ()
+    public FanoronaGameBoard getGameBoard ()
     {
         return gameBoard;
     }
@@ -210,7 +214,7 @@ class MaxNode implements MinimaxNode
 		if (isLeaf())
 		{
 			// board evaluation function goes here
-            value = 0;
+            value = gameBoard.boardEvaluation();
 			return value;
 		}
 		else
