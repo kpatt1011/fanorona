@@ -455,13 +455,19 @@ class FanoronaGameBoard
 			}
 		}
 		/*second level of evaluation: assign advantage points for total number
-		  of moves available for each piece on each team*/
+		  of moves available for each piece on each team. additional advantage multiplier
+		  is given for available moves if they are capture moves */
 		for(Point p : blackPieces)
 		{
 		 Coordinate currentPieceCoordinate=p.getCoordinate();
 		 List<Move> moves = getPossibleMoves(currentPieceCoordinate);
 		 int blackMoveAdvantage = moves.size();
-		 advantage=advantage + blackMoveAdvantage;
+		 if(blackMoveAdvantage != 0 && moves.get(0).isCapture())
+		 {
+		  advantage=advantage + (3 * blackMoveAdvantage);
+		 } else{
+		  advantage=advantage + blackMoveAdvantage;
+		 }
 		}
 		
 		for(Point p : whitePieces)
@@ -469,7 +475,12 @@ class FanoronaGameBoard
 		 Coordinate currentPieceCoordinate=p.getCoordinate();
 		 List<Move> moves = getPossibleMoves(currentPieceCoordinate);
 		 int whiteMoveAdvantage = moves.size();
-		 advantage=advantage - whiteMoveAdvantage;
+		 if(whiteMoveAdvantage != 0 && moves.get(0).isCapture())
+		 {
+		  advantage=advantage - (3 * whiteMoveAdvantage);
+		 } else{
+		  advantage=advantage - whiteMoveAdvantage;
+		 }
 		}
 		
 		return advantage;
