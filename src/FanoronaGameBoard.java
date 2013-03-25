@@ -4,6 +4,35 @@ import java.util.*;
 
 Current TODO
 
+port number > 1024
+try{
+serverSocket = new ServerSocket(PortNumToBind)
+}
+catch
+{
+	System.exit(-1)
+	}
+
+
+-----
+
+Socket clientSocket = new ServerSocket()
+
+_______
+
+c_socket = new socket("server addr", portNum)
+
+
+clientSocket.getInputstream
+			getOutputstream
+
+			bytep[] buff = new byte[1024]
+			sockOutpute.write
+
+CLOSE THE SOCKET!
+
+
+
 DONE
 
 pieces can move anywhere when unable to capture
@@ -19,10 +48,19 @@ pass function
 
 FUTURE SPRINTS:::
 
-50 turn limit
 check win/draw conditions
-turn number
+turn number/limit
 networked play
+change board sizes
+get winning player or tie
+sacrifice moves
+
+
+-------
+server
+parser
+timer
+interpreter
 
 */
 
@@ -50,7 +88,7 @@ class FanoronaGameBoard
 	/******************/
 
 	public FanoronaGameBoard()
-	{
+		{
 		for ( int i = 0; i < BOARD_LENGTH ; i++ )
 		{
 			gameBoard.add(new LinkedList<Point>());
@@ -143,7 +181,7 @@ class FanoronaGameBoard
 		if (currentPlayer == Player.One)
 			return Player.Two;
 		else
-		
+
 			return Player.One;
 	}
 
@@ -423,12 +461,12 @@ class FanoronaGameBoard
 		*/
 		int advantage=0;
 		//iterates through each vector<point> object in the gameboard vector
-		ListIterator<LinkedList<Point>>  rowIterator= gameBoard.listIterator(); 
-		//store the points of each black and white piece for further operations 
-		LinkedList<Point> blackPieces=new LinkedList<Point>(); 
-		LinkedList<Point> whitePieces=new LinkedList<Point>(); 
-		
-		/*first level of evaluation: find all remaining pieces on the board and 
+		ListIterator<LinkedList<Point>>  rowIterator= gameBoard.listIterator();
+		//store the points of each black and white piece for further operations
+		LinkedList<Point> blackPieces=new LinkedList<Point>();
+		LinkedList<Point> whitePieces=new LinkedList<Point>();
+
+		/*first level of evaluation: find all remaining pieces on the board and
 		  determine advantage based on number of
 		  remaining players for each team*/
 		while(rowIterator.hasNext())
@@ -438,14 +476,14 @@ class FanoronaGameBoard
 			while(columnIterator.hasNext())
 			{
 				Point currentPoint = columnIterator.next();
-				String value = currentPoint.toString("W", "B", "E");
+				char value = currentPoint.toString("W", "B", "E").charAt(0);
 				switch(value)
 				{
-					case "B":
+					case 'B':
 						advantage= advantage + 1;
 						blackPieces.add(currentPoint);
 						break;
-					case "W":
+					case 'W':
 						advantage= advantage - 1;
 						whitePieces.add(currentPoint);
 						break;
@@ -469,7 +507,7 @@ class FanoronaGameBoard
 		  advantage=advantage + blackMoveAdvantage;
 		 }
 		}
-		
+
 		for(Point p : whitePieces)
 		{
 		 Coordinate currentPieceCoordinate=p.getCoordinate();
@@ -482,7 +520,7 @@ class FanoronaGameBoard
 		  advantage=advantage - whiteMoveAdvantage;
 		 }
 		}
-		
+
 		return advantage;
 	}
 
