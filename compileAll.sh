@@ -7,7 +7,7 @@ FAILURE="\tFailure!\n"
 echo -ne "Compiling the project...\n"
 
 #compile the project
-if javac -d ./build/ ./src/*.java;
+if javac -classpath ./:./build/:junit-4.10.jar -d ./build/ ./src/*.java;
 	then
 		echo -ne $SUCCESS
 	else
