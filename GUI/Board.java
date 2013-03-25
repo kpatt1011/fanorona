@@ -8,13 +8,17 @@ public class Board {
 
 	ArrayList<Piece> pieces; // All of the pieces currently on the board
 	ArrayList<Space> spaces; // All the spaces on the board
+	int remainingRed;
+	int remainingBlack;
 	
 	// Constructs a new board with the starting piece layout
 	// Defines all the spaces on the board and puts the pieces in the proper spaces
 	 public Board(Graphics g) {
 		
-        pieces = new ArrayList<Piece> (64);
-        spaces = new ArrayList<Space> (64);
+     pieces = new ArrayList<Piece> (64);
+     spaces = new ArrayList<Space> (64);
+		 remainingRed=23;
+		 remainingBlack=23;
 	  	int x_location =20;
     	int y_location = 20;
     	
@@ -76,6 +80,8 @@ public class Board {
      }// End of board constructor 
 	 
 	 void display_pieces(Graphics g) {
+	 
+	 
 		 
 		// Display Pieces on board in starting arrangment
     	 for(int i= 0; i < spaces.size(); i++) {
@@ -95,7 +101,24 @@ public class Board {
     		 }
     	 }
 	 }
-}
+		
+		// Returns the number of pieces remaining for a given color. 0 for black, 1 for red, returns -1 if there is an error
+		int getPiecesRemaining(int color) {
+			if(color == 0) {
+				return remainingRed; 
+			}
+			
+			if (color == 1) {
+				return remainingBlack;
+			}
+			
+			else {
+				return -1;
+			}
+			
+		}
+	 
+	 }
 	 
 	
 	
