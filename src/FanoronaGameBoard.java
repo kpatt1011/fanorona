@@ -421,47 +421,57 @@ class FanoronaGameBoard
 		 /* negative advantage means white is winning, 0 is neutral, positive means black is winning
 			NOTE: this function is called on the current gameboard, with the assumption that the gameboard
 		*/
-
 		int advantage=0;
-		ListIterator<LinkedList<Point>>  rowIterator= gameBoard.listIterator(); //iterates through each vector<point> object in the gameboard vector
-		LinkedList<Point> blackPieces=new LinkedList<Point>();
+		//iterates through each vector<point> object in the gameboard vector
+		ListIterator<LinkedList<Point>>  rowIterator= gameBoard.listIterator(); 
+		//store the points of each black and white piece for further operations 
+		LinkedList<Point> blackPieces=new LinkedList<Point>(); 
+		LinkedList<Point> whitePieces=new LinkedList<Point>(); 
+		
+		/*first level of evaluation: find all remaining pieces on the board and 
+		  determine advantage based on number of
+		  remaining players for each team*/
 		while(rowIterator.hasNext())
 		{
 			LinkedList<Point> currentRow = (LinkedList<Point>) rowIterator.next();
 			ListIterator<Point> columnIterator= currentRow.listIterator(); //iterates through each point object in the current column
 			while(columnIterator.hasNext())
 			{
-				//check each point for a black or white piece, make the appropriate increment to advantage
-				
 				Point currentPoint = columnIterator.next();
 				String value = currentPoint.toString("W", "B", "E");
 				switch(value)
 				{
 					case "B":
 						advantage= advantage + 1;
+						blackPieces.add(currentPoint);
 						break;
 					case "W":
 						advantage= advantage - 1;
+						whitePieces.add(currentPoint);
 						break;
 					default:
 						break;
 				}
 			}
 		}
-	/*
-		for(black piece: gameboard)
+		/*second level of evaluation: assign advantage points for total number
+		  of moves available for each piece on each team*/
+		for(Point p : blackPieces)
 		{
-			for(valid move: currentBlackPiece)
-			{
-				if possible move is a capture move, +1
-				+ 1 for every white piece that would be captured on that immediate move
-				(eventually)
-				if not capture move,
-				if mood would set up a capture move for white
-				-3
-			}
+		 Coordinate currentPieceCoordinate=p.getCoordinate();
+		 List<Move> moves = getPossibleMoves(currentPieceCoordinate);
+		 int blackMoveAdvantage = moves.size();
+		 advantage=advantage + blackMoveAdvantage;
 		}
-	*/
+		
+		for(Point p : whitePieces)
+		{
+		 Coordinate currentPieceCoordinate=p.getCoordinate();
+		 List<Move> moves = getPossibleMoves(currentPieceCoordinate);
+		 int whiteMoveAdvantage = moves.size();
+		 advantage=advantage - whiteMoveAdvantage;
+		}
+		
 		return advantage;
 	}
 
