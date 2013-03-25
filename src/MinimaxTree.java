@@ -22,7 +22,7 @@ class MinimaxTree
         root.populateChildren (depth);
     }
 
-    Vector<Vector<Point>> getIdealMove ()
+    LinkedList<LinkedList<Point>> getIdealMove ()
     {
         ArrayList<? extends MinimaxNode> rootChildren = root.getChildren();
         

@@ -6,7 +6,7 @@ interface MinimaxNode
 
     ArrayList<? extends MinimaxNode> getChildren ();
 
-    public Vector<Vector<Point>> getGameBoard ();
+    public LinkedList<LinkedList<Point>> getGameBoard ();
 
     boolean isLeaf ();
 
@@ -24,17 +24,17 @@ class MinNode implements MinimaxNode
 {
     // DATA MEMBERS
 	private ArrayList<MaxNode> children = new ArrayList<MaxNode>();
-    private Vector<Vector<Point>> gameBoard = new Vector<Vector<Point>>();
+    private LinkedList<LinkedList<Point>> gameBoard = new LinkedList<LinkedList<Point>>();
     private int value;
 	
     // PUBLIC FUNCTIONS
-	public MinNode (Vector<Vector<Point>> newGameBoard)
+	public MinNode (LinkedList<LinkedList<Point>> newGameBoard)
 	{
 		gameBoard = newGameBoard;
         value = Integer.MAX_VALUE;
 	}
 
-	public MinNode (Vector<Vector<Point>> newGameBoard, int depth)
+	public MinNode (LinkedList<LinkedList<Point>> newGameBoard, int depth)
 	{
 		gameBoard = newGameBoard;
         value = Integer.MAX_VALUE;
@@ -50,7 +50,7 @@ class MinNode implements MinimaxNode
         {
             for (int i = 0; i < 3; i++)
             {
-                Vector<Vector<Point>> blankBoard = new Vector<Vector<Point>>();
+                LinkedList<LinkedList<Point>> blankBoard = new LinkedList<LinkedList<Point>>();
                 MaxNode newNode = new MaxNode(blankBoard, depth-1); 
 
                 children.add(newNode);
@@ -63,7 +63,7 @@ class MinNode implements MinimaxNode
         return children;
     }
 
-    public Vector<Vector<Point>> getGameBoard ()
+    public LinkedList<LinkedList<Point>> getGameBoard ()
     {
         return gameBoard;
     }
@@ -156,17 +156,17 @@ class MaxNode implements MinimaxNode
 {
     // DATA MEMBERS
 	private ArrayList<MinNode> children = new ArrayList<MinNode>();
-    private Vector<Vector<Point>> gameBoard = new Vector<Vector<Point>>();
+    private LinkedList<LinkedList<Point>> gameBoard = new LinkedList<LinkedList<Point>>();
     private int value;
 	
     // PUBLIC FUNCTIONS
-	public MaxNode (Vector<Vector<Point>> newGameBoard)
+	public MaxNode (LinkedList<LinkedList<Point>> newGameBoard)
 	{
         gameBoard = newGameBoard;
         value = Integer.MIN_VALUE;
     }
 	
-	public MaxNode (Vector<Vector<Point>> newGameBoard, int depth)
+	public MaxNode (LinkedList<LinkedList<Point>> newGameBoard, int depth)
 	{
         gameBoard = newGameBoard;
         value = Integer.MIN_VALUE;
@@ -182,7 +182,7 @@ class MaxNode implements MinimaxNode
         {
             for (int i = 0; i < 3; i++)
             {
-                Vector<Vector<Point>> blankBoard = new Vector<Vector<Point>>();
+                LinkedList<LinkedList<Point>> blankBoard = new LinkedList<LinkedList<Point>>();
                 MinNode newNode = new MinNode(blankBoard, depth-1); 
 
                 children.add(newNode);
@@ -195,7 +195,7 @@ class MaxNode implements MinimaxNode
         return children;
     }
 	
-    public Vector<Vector<Point>> getGameBoard ()
+    public LinkedList<LinkedList<Point>> getGameBoard ()
     {
         return gameBoard;
     }
