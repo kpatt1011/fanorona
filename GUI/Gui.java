@@ -1,91 +1,117 @@
 import java.awt.*;
+import java.util.*;
+import java.awt.event.*;
+import javax.swing.JComponent;
+import javax.swing.JButton;
+import javax.swing.*;
 
-/* This very basic class simply creates a canvas to draw the game board on, 
- * and draws a game board with all black pieces.
- * 
- * Current code written by Keith Pattison
- */
 
-class Gui extends Canvas {
 
+class Gui extends JComponent {
+	
+		static Board board;
+		
     public Gui(){
-        setSize(400, 400);
-        setBackground(Color.white);
+		
+			drawStartScreen();
+		
+	
+			
     }
     
 
     public static void main(String[] argS){
-    	Gui G = new Gui();
+    	//Gui G = new Gui();
+			
+			final JFrame window = new JFrame();
+			window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			window.setBounds(30, 30, 500, 500);
+			window.getContentPane().add(new Gui());
+			window.setVisible(true);
     	
-    	  //create a new frame to which we will add a canvas
-        Frame aFrame = new Frame();
-        aFrame.setSize(300, 300);
-        
-        //add the canvas
-        aFrame.add(G);
-        
-        aFrame.setVisible(true);
+			JPanel pnlButton = new JPanel();
+			JButton btnAddFlight = new JButton ("X");
+			
+		  //FlightInfo setbounds
+			btnAddFlight.setBounds(440, 0, 50, 30);
+
+			//JPanel bounds
+			pnlButton.setBounds(800, 800, 200, 100);
+			pnlButton.setLayout(null);
+			
+			btnAddFlight.addActionListener(new ActionListener() {
+                 public void actionPerformed(ActionEvent e)
+                 {
+                     window.dispose();
+
+                 }
+        });
+			
+			// Adding to JFrame
+			pnlButton.add(btnAddFlight);
+			window.add(pnlButton);
+			
+			window.setBackground(Color.WHITE);
+      window.setSize(500, 500);
+			
+      
+				
+			window.setVisible(true);
+				
+			
+				
+				
+     
     }
     
     public void paint(Graphics g) {
     	
-    	int x_location =20;
-    	int y_location = 20;
-    	
-    	for(int i=0; i < 5; i++) {
-    		
-    		x_location = 20; // Change the location back to the location of the first column
-    		
-    		 
-    		for(int j=0; j < 9; j++) {
-    			
-    			// Draw lines connecting each space horizontally
-    			if (j != 8) {
-    				g.drawLine(x_location, y_location + 10 , x_location + 55 , y_location + 10);
-    			}
-    			
-    			// Draw lines connecting each space vertically
-    			if(i != 4) {
-    				g.drawLine(x_location + 10, y_location, x_location + 10 , y_location + 55);
-    			}
-    			
-    			// Draw lines from top left to bottom right in even rows.
-    			if (((j==0 || j==2 || j==4 || j == 6 ) && (i== 0 || i == 2)) ) {
-    				g.drawLine(x_location + 5, y_location + 5, x_location + 55 , y_location + 55);
-    			}
-    			
-    			// Draws lines from top left to bottom right in odd rows
-    			
-    			if (((i == 1 || i == 3) && (j== 1 || j == 3 || j ==5 || j ==7 )) ){
-    				g.drawLine(x_location + 5, y_location + 5, x_location + 55 , y_location + 55);
-    			}
-    			
-    			// Draw lines from top right to bottom left in even rows.
-    			if (((j==2 || j==4 || j == 6 || j == 8) && (i== 0 || i == 2)) ) {
-    				g.drawLine(x_location + 10, y_location + 5, x_location - 45 , y_location + 65);
-    			}
-    			
-    			
-    			// Draws lines from top right to bottom left in odd rows
-    			
-    			if (((i == 1 || i == 3) && (j== 1 || j == 3 || j ==5 || j ==7 )) ){
-    				g.drawLine(x_location + 10, y_location + 5, x_location - 45 , y_location + 65);
-    			}
-    			
-    			
-    			
-    			// Draw lines from right to left in odd rows
-    			
-    			//g.drawOval(x_location, y_location, 20, 20);
-    			//g.fillOval(x_location, y_location, 20, 20);
-    			x_location += 50;
-    		}
-    		
-    		
-    		y_location += 50;
-    		
-    	}
-    	
+			board = new Board(g);
+      board.display_pieces(g);
+			drawScoreboard(g);
+			
+			
+		
+				
+					
+		
+			
+			
     }
+		
+		// Draws start screen. With rules and instructions
+		public static void drawStartScreen() {
+		
+			JOptionPane pane = new JOptionPane();
+				JDialog dialog = pane.createDialog( "Start Screen");
+				pane.setMessage("Welcome to Fanorona!");
+				
+				
+				dialog.show();
+				
+			}
+		
+		
+		public static void drawScoreboard (Graphics g) {
+		
+			Font font = new Font("Serif",Font.BOLD, 24);
+			g.setFont(font);
+			g.drawString("Pieces Remaining",20,355);
+			Font font2 = new Font("Serif",Font.PLAIN, 14);
+			g.setFont(font2);
+			g.drawString("Red",40,375);
+			g.drawString("Black",100,375);
+			
+			// Display the Number of Pieces Remaining
+			int red  = board.getPiecesRemaining(1);
+			int black = board.getPiecesRemaining(0);
+			String numRed = Integer.toString(red);
+			String numBlack = Integer.toString(black);
+			
+			
+			g.drawString(numRed,40,400);
+			g.drawString(numBlack,100,400);
+		}
+		
     }
     
