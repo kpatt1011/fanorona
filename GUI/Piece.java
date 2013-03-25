@@ -1,8 +1,9 @@
 import java.awt.*;
+import javax.swing.*;
 
 // The GUI class for the representation of a piece 
 
-public class Piece  {
+public class Piece {
 	
 	int x_location; // x location on board
 	int y_location; // y location on board

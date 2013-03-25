@@ -6,41 +6,48 @@ import javax.swing.*;
 
 
 
-class Gui extends JFrame {
+class Gui extends JComponent {
 	
 		static Board board;
 		
     public Gui(){
 		
+			drawStartScreen();
+		
 			setBackground(Color.WHITE);
       setSize(500, 500);
 				
-				
 					
 			JPanel pnlButton = new JPanel();
-		JButton btnAddFlight = new JButton ("Add Flight");
+			JButton btnAddFlight = new JButton ("Add Flight");
 			
-		   //FlightInfo setbounds
-    btnAddFlight.setBounds(60, 400, 220, 30);
+		  //FlightInfo setbounds
+			btnAddFlight.setBounds(60, 400, 220, 30);
 
-    //JPanel bounds
-    pnlButton.setBounds(800, 800, 200, 100);
+			//JPanel bounds
+			pnlButton.setBounds(800, 800, 200, 100);
 			pnlButton.setLayout(null);
 			
 			// Adding to JFrame
 			pnlButton.add(btnAddFlight);
 			add(pnlButton);
 			
-        drawStartScreen();
+      
 				
-				setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			//	setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 				setVisible(true);
 			
     }
     
 
     public static void main(String[] argS){
-    	Gui G = new Gui();
+    	//Gui G = new Gui();
+			
+			 JFrame window = new JFrame();
+			window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			window.setBounds(30, 30, 300, 300);
+			window.getContentPane().add(new Gui());
+			window.setVisible(true);
     	
 				
 			
@@ -51,10 +58,11 @@ class Gui extends JFrame {
      
     }
     
-    public void paintComponent(Graphics g) {
-    //	board = new Board(g);
-    //	board.display_pieces(g);
+    public void paint(Graphics g) {
+    	board = new Board(g);
+      board.display_pieces(g);
 			drawScoreboard(g);
+			
 			
 			
     }
