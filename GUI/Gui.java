@@ -1,5 +1,6 @@
 import java.awt.*;
 import java.util.*;
+import java.awt.event.*;
 import javax.swing.JComponent;
 import javax.swing.JButton;
 import javax.swing.*;
@@ -14,28 +15,7 @@ class Gui extends JComponent {
 		
 			drawStartScreen();
 		
-			setBackground(Color.WHITE);
-      setSize(500, 500);
-				
-					
-			JPanel pnlButton = new JPanel();
-			JButton btnAddFlight = new JButton ("Add Flight");
-			
-		  //FlightInfo setbounds
-			btnAddFlight.setBounds(60, 400, 220, 30);
-
-			//JPanel bounds
-			pnlButton.setBounds(800, 800, 200, 100);
-			pnlButton.setLayout(null);
-			
-			// Adding to JFrame
-			pnlButton.add(btnAddFlight);
-			add(pnlButton);
-			
-      
-				
-			//	setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-				setVisible(true);
+	
 			
     }
     
@@ -43,26 +23,58 @@ class Gui extends JComponent {
     public static void main(String[] argS){
     	//Gui G = new Gui();
 			
-			 JFrame window = new JFrame();
+			final JFrame window = new JFrame();
 			window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-			window.setBounds(30, 30, 300, 300);
+			window.setBounds(30, 30, 500, 500);
 			window.getContentPane().add(new Gui());
 			window.setVisible(true);
     	
+			JPanel pnlButton = new JPanel();
+			JButton btnAddFlight = new JButton ("X");
+			
+		  //FlightInfo setbounds
+			btnAddFlight.setBounds(440, 0, 50, 30);
+
+			//JPanel bounds
+			pnlButton.setBounds(800, 800, 200, 100);
+			pnlButton.setLayout(null);
+			
+			btnAddFlight.addActionListener(new ActionListener() {
+                 public void actionPerformed(ActionEvent e)
+                 {
+                     window.dispose();
+
+                 }
+        });
+			
+			// Adding to JFrame
+			pnlButton.add(btnAddFlight);
+			window.add(pnlButton);
+			
+			window.setBackground(Color.WHITE);
+      window.setSize(500, 500);
+			
+      
+				
+			window.setVisible(true);
 				
 			
 				
 				
-			//add the canvas
-        //add(G);
      
     }
     
     public void paint(Graphics g) {
-    	board = new Board(g);
+    	
+			board = new Board(g);
       board.display_pieces(g);
 			drawScoreboard(g);
 			
+			
+		
+				
+					
+		
 			
 			
     }

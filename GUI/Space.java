@@ -20,4 +20,5 @@ public class Space {
 	int get_y() {
 		return y_location;
 	}
+	
 }
