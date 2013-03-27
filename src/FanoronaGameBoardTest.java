@@ -34,7 +34,7 @@ public class FanoronaGameBoardTest {
 	@Test
 	public void test_autoPlayRandom()
 	{
-
+/*
 		System.out.printf(
 		"\n" +
 		"Best Viewed with MonoSpace 12pt Font\n" +
@@ -61,6 +61,38 @@ public class FanoronaGameBoardTest {
 			i++;
 		}
 		System.out.println("Total Turns: " + i);
+*/
+	}
+
+	@Test
+	public void test_AI()
+	{
+		FanoronaGameBoard fgb = new FanoronaGameBoard();
+		Random rng = new Random();
+		int i = 0;
+
+		while (true)
+		{
+			List<FanoronaGameBoard.Move> moves = fgb.getAllPossibleMoves();
+			printBoardMove(fgb, moves.get(rng.nextInt(100) % moves.size()), true);
+
+			i++;
+			if (fgb.isGameOver())
+				break;
+
+			MaxNode testRoot = new MaxNode (fgb);
+			MinimaxTree testTree = new MinimaxTree (testRoot, 1);
+
+			printBoardMove(fgb, testTree.getIdealMove(), true);
+
+			i++;
+			if (fgb.isGameOver())
+				break;
+		}
+
+		System.out.println("Total Turns: " + i);
+		System.out.println( "Winner is: " + fgb.playerToString(fgb.getWinner()));
+
 	}
 
 	//Test that the getBoard function.

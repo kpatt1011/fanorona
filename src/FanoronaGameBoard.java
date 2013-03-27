@@ -66,29 +66,34 @@ interpreter
 
 class FanoronaGameBoard
 {
-
-	private LinkedList< LinkedList<Point> > gameBoard = new LinkedList< LinkedList<Point> >();
-	private int totalTurns = 0;
-	private Player currentPlayer = Player.One;
-	private boolean playerMovingAgain = false;
-	private List<Move> playerMovesThisTurn = new LinkedList<Move>();
-	private Coordinate playerLastPieceMoved = null;
-	private Pair<Integer,Integer> playerLastDirectionMoved = null;
 	public static final int BOARD_WIDTH = 9;
 	public static final int BOARD_LENGTH = 5;
 	private static final int BOARD_CENTER_WIDTH = (int) Math.ceil(BOARD_WIDTH  / 2);
 	private static final int BOARD_CENTER_LENGTH = (int) Math.ceil(BOARD_LENGTH / 2);
+	private static final int MAX_TURNS = BOARD_LENGTH * 10;
 
-	public enum Player { One, Two }
+	private LinkedList< LinkedList<Point> >   gameBoard                =
+		new LinkedList< LinkedList<Point> >();
+	private int                               totalTurns               = 0;
+	private Player                            currentPlayer            = Player.One;
+	private boolean                          playerMovingAgain        = false;
+	private Coordinate                       playerLastPieceMoved     = null;
+	private Pair<Integer,Integer>             playerLastDirectionMoved = null;
+	private List<Move>                        playerMovesThisTurn      =
+		new LinkedList<Move>();
+	private List<Pair<Move,Integer>>          recentSacrificeMoves     =
+		new LinkedList<Pair<Move,Integer>>();
+
+	public enum Player { One, Two, Tie, GameNotOver }
 	public enum MoveResult { Failure, Success, Success_EndOfTurn }
-	public enum Type { Approach, Withdraw, Paika, Undetermined, Invalid }
+	public enum Type { Approach, Withdraw, Paika, Sacrifice, Undetermined, Invalid }
 
 	/******************/
 	/***CONSTRUCTORS***/
 	/******************/
 
 	public FanoronaGameBoard()
-		{
+	{
 		for ( int i = 0; i < BOARD_LENGTH ; i++ )
 		{
 			gameBoard.add(new LinkedList<Point>());
@@ -138,31 +143,36 @@ class FanoronaGameBoard
 	//deep copy constructor
 	public FanoronaGameBoard(FanoronaGameBoard fgb)
 	{
+
+
+
 		totalTurns = fgb.totalTurns;
 		currentPlayer = fgb.currentPlayer;
 		playerMovingAgain = fgb.playerMovingAgain;
 
 		if (fgb.playerLastPieceMoved != null)
-			playerLastPieceMoved = new Coordinate(playerLastPieceMoved);
+			playerLastPieceMoved = new Coordinate(fgb.playerLastPieceMoved);
 
 		if (fgb.playerLastDirectionMoved != null)
 			playerLastDirectionMoved = new
 			     Pair<Integer,Integer>
 			     (
-			      playerLastDirectionMoved.first.intValue() ,
-			      playerLastDirectionMoved.second.intValue()
+			      fgb.playerLastDirectionMoved.first.intValue() ,
+			      fgb.playerLastDirectionMoved.second.intValue()
 			     );
 
-		for (Move move : playerMovesThisTurn)
+		for (Move move : fgb.playerMovesThisTurn)
 			playerMovesThisTurn.add(new Move(move));
 
 		for ( int i = 0; i < BOARD_LENGTH ; i++ )
 		{
 			gameBoard.add(new LinkedList<Point>());
 			for ( int j = 0; j < BOARD_WIDTH; j++)
-				gameBoard.get(i).add(new Point(new Coordinate(j,i), getPointAt(j, i).getState()));
+				gameBoard.get(i).add(new Point(new Coordinate(j,i), fgb.getPointAt(j, i).getState()));
 		}
 
+		for (Pair<Move,Integer> pair : fgb.recentSacrificeMoves)
+			recentSacrificeMoves.add(new Pair<Move,Integer>(new Move(pair.first), new Integer(pair.second.intValue())));
 	}
 
 	/*************************/
@@ -183,6 +193,23 @@ class FanoronaGameBoard
 		else
 
 			return Player.One;
+	}
+
+	public boolean isGameOver()
+	{
+		return (getAllPossibleMoves().size() == 0 || 	totalTurns == MAX_TURNS);
+	}
+
+	public Player getWinner()
+	{
+		if (isGameOver())
+		{
+			if(totalTurns == MAX_TURNS)
+				return Player.Tie;
+			else
+				return getWaitingPlayer();
+		}
+		return Player.GameNotOver;
 	}
 
 	//return unmodifiable version of board
@@ -223,6 +250,7 @@ class FanoronaGameBoard
 		playerMovesThisTurn.clear();
 		playerLastDirectionMoved = null;
 		playerLastPieceMoved = null;
+		totalTurns++;
 		currentPlayer = getWaitingPlayer();
 	}
 
@@ -281,9 +309,18 @@ class FanoronaGameBoard
 	public MoveResult move(Move move)
 	{
 
+		if (isGameOver())
+			return MoveResult.Failure;
+
 		if ( move.isValid() )
 		{
-			capture(move);
+			if (move.isCapture())
+				capture(move);
+			else if (move.isSacrifice())
+			{
+				getPointAt(move.start).setState( Point.State.isOccupiedBySacrifice );
+				recentSacrificeMoves.add(new Pair<Move,Integer>(move, (totalTurns + 1)));
+			}
 
 			//assume the player can go again
 			playerMovingAgain = true;
@@ -293,6 +330,18 @@ class FanoronaGameBoard
 
 			if ( captureMoveExists(move.end) == false)
 			{
+				ListIterator<Pair<Move,Integer>> itr = recentSacrificeMoves.listIterator();
+				//remove tokens sacrificed last turn
+				while (itr.hasNext())
+				{
+					Pair<Move,Integer> recentSacrifice = itr.next();
+					if (recentSacrifice.second.intValue() == totalTurns)
+					{
+						getPointAt(recentSacrifice.first.start).setState( Point.State.isEmpty );
+						itr.remove();
+					}
+				}
+
 				pass();
 				return MoveResult.Success_EndOfTurn;
 			}
@@ -325,15 +374,18 @@ class FanoronaGameBoard
 				if (getPointAt(j,i).getState() == token)
 					possibleMoves.addAll(getPossibleMoves(getPointAt(j,i).getCoordinate()));
 
-		//if a capture move is available, remove all non capture moves
+		//if a capture move is available, remove all non-capture, non-sacrifice moves moves
 		for ( Move move : possibleMoves)
 		{
 			if (move.isCapture())
 			{
 				ListIterator<Move> itr = possibleMoves.listIterator();
 				while (itr.hasNext())
-					if (itr.next().isCapture() == false)
+				{
+					Move currentMove = itr.next();
+					if (currentMove.isCapture() == false && currentMove.isSacrifice() == false)
 						itr.remove();
+				}
 				break;
 			}
 		}
@@ -368,15 +420,18 @@ class FanoronaGameBoard
 			}
 		}
 
-		//if a capture move is available, remove all non capture moves
+		//if a capture move is available, remove all non-capture, non-sacrifice moves
 		for ( Move move : moves)
 		{
 			if (move.isCapture())
 			{
 				itr = moves.listIterator();
 				while (itr.hasNext())
-					if (itr.next().isCapture() == false)
+				{
+					Move currentMove = itr.next();
+					if (currentMove.isCapture() == false && currentMove.isSacrifice() == false)
 						itr.remove();
+				}
 				break;
 			}
 		}
@@ -407,6 +462,9 @@ class FanoronaGameBoard
 			if ( isOnBoard(coord) == false || getPointAt(coord).isOccupied())
 				itr.remove();
 		}
+
+		//add the new sacrifice move to the moves list
+		ends.add(new Coordinate(start.x    , start.y    ));
 
 		return ends;
 	}
@@ -476,7 +534,7 @@ class FanoronaGameBoard
 			while(columnIterator.hasNext())
 			{
 				Point currentPoint = columnIterator.next();
-				char value = currentPoint.toString("W", "B", "E").charAt(0);
+				char value = currentPoint.toString("W", "B", "S", "E").charAt(0);
 				switch(value)
 				{
 					case 'B':
@@ -533,8 +591,8 @@ class FanoronaGameBoard
 	{
 		String string = new String();
 
-		//for (int i = 0; i < BOARD_LENGTH; i++ )
-		//	string += toString(i) + "\n";
+		for (int i = 0; i < BOARD_LENGTH; i++ )
+			string += toString(i) + "\n";
 
 		return string;
 	}
@@ -561,6 +619,7 @@ class FanoronaGameBoard
 			case Approach: return "Approach";
 			case Withdraw: return "Withdraw";
 			case Paika: return "Paika";
+			case Sacrifice: return "Sacrifice";
 			case Undetermined: return "Undetermined";
 			case Invalid: return "Invalid";
 			default: return "Unknown";
@@ -571,9 +630,11 @@ class FanoronaGameBoard
 	{
 		switch (player)
 		{
-			case One: return "One";
-			case Two: return "Two";
-			default: return "Unknown";
+			case One: 			return "One";
+			case Two: 			return "Two";
+			case Tie: 			return "Tie";
+			case GameNotOver:	return "Game Not Over";
+			default: 			return "Unknown";
 		}
 	}
 
@@ -609,6 +670,15 @@ class FanoronaGameBoard
 		{
 			this.start = start;
 			this.end = end;
+
+			if ( start.equals(end) )
+			{
+				if (playerMovesThisTurn.size() == 0)
+					type = Type.Sacrifice;
+				else
+					type = Type.Invalid;
+				return;
+			}
 
 			if ( isValidMovement() == false)
 			{
@@ -653,6 +723,9 @@ class FanoronaGameBoard
 
 		public boolean isPaika()
 		{ return type == Type.Paika; }
+
+		public boolean isSacrifice()
+		{ return type == Type.Sacrifice; }
 
 		public boolean isUndetermined()
 		{ return type == Type.Undetermined; }

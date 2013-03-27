@@ -3,7 +3,7 @@ import java.util.*;
 
 public final class Point
 {
-	public enum State { isOccupiedByBlack, isOccupiedByWhite, isEmpty}
+	public enum State { isOccupiedByBlack, isOccupiedByWhite, isOccupiedBySacrifice, isEmpty }
 
 	private State state;
 	private final Coordinate coordinate;
@@ -59,21 +59,23 @@ public final class Point
 	{
 		switch(state)
 		{
-			case isOccupiedByBlack: return "●";
-			case isOccupiedByWhite: return "○";
-			case isEmpty:           return "▫";
-			default:                return "?";
+			case isOccupiedByBlack: 	return "●";
+			case isOccupiedByWhite: 	return "○";
+			case isOccupiedBySacrifice:	return "◍";
+			case isEmpty:           	return "▫";
+			default:                	return "?";
 		}
 	}
 
-	public String toString(String w, String b, String e)
+	public String toString(String w, String b, String s, String e)
 	{
 		switch(state)
 		{
-			case isOccupiedByBlack: return b;
-			case isOccupiedByWhite: return w;
-			case isEmpty:           return e;
-			default:                return "?";
+			case isOccupiedByBlack: 	return b;
+			case isOccupiedByWhite: 	return w;
+			case isOccupiedBySacrifice:	return s;
+			case isEmpty:           	return e;
+			default:                	return "?";
 		}
 	}
 
