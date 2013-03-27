@@ -22,7 +22,7 @@ class MinimaxTree
         root.populateChildren (depth);
     }
 
-    FanoronaGameBoard getIdealMove ()
+    FanoronaGameBoard.Move getIdealMove ()
     {
         ArrayList<? extends MinimaxNode> rootChildren = root.getChildren();
         
@@ -49,11 +49,11 @@ class MinimaxTree
 
         if (root.isMaxNode())
         {
-            return rootChildren.get(maxIndex).getGameBoard();
+            return rootChildren.get(maxIndex).getMove();
         }
         else
         {
-            return rootChildren.get(minIndex).getGameBoard();
+            return rootChildren.get(minIndex).getMove();
         }
     }
 

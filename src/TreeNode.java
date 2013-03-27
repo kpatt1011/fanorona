@@ -16,6 +16,8 @@ interface MinimaxNode
 
     public boolean isMaxNode ();
     public boolean isMinNode ();
+	
+	public FanoronaGameBoard.Move getMove();
 
     public void print ();
 }
@@ -25,6 +27,7 @@ class MinNode implements MinimaxNode
     // DATA MEMBERS
 	private ArrayList<MaxNode> children = new ArrayList<MaxNode>();
     private FanoronaGameBoard gameBoard;
+	private FanoronaGameBoard.Move moveToThisBoard;
     private int value;
 	
     // PUBLIC FUNCTIONS
@@ -41,6 +44,14 @@ class MinNode implements MinimaxNode
         populateChildren(depth);
 	}
 	
+	public MinNode (FanoronaGameBoard newGameBoard, int depth, FanoronaGameBoard.Move newMove)
+	{
+		gameBoard = newGameBoard;
+        value = Integer.MAX_VALUE;
+		moveToThisBoard = newMove;
+        populateChildren(depth);
+	}
+	
     public void populateChildren (int depth)
     {
         // get all possible board states from current moves
@@ -53,7 +64,7 @@ class MinNode implements MinimaxNode
             {
                 FanoronaGameBoard childBoard = new FanoronaGameBoard(gameBoard);
                 childBoard.move(childMoves.get(i));
-                MaxNode childNode = new MaxNode(childBoard, depth-1);
+                MaxNode childNode = new MaxNode(childBoard, depth-1, childMoves.get(i));
 
                 children.add(childNode);
             }
@@ -124,6 +135,11 @@ class MinNode implements MinimaxNode
     {
         return true;
     }
+	
+	public FanoronaGameBoard.Move getMove()
+	{
+		return moveToThisBoard;
+	}
 
     public void print ()
     {
@@ -159,6 +175,7 @@ class MaxNode implements MinimaxNode
     // DATA MEMBERS
 	private ArrayList<MinNode> children = new ArrayList<MinNode>();
     private FanoronaGameBoard gameBoard;
+	private FanoronaGameBoard.Move moveToThisBoard;
     private int value;
 	
     // PUBLIC FUNCTIONS
@@ -175,6 +192,14 @@ class MaxNode implements MinimaxNode
         populateChildren(depth);
     }
 	
+	public MaxNode (FanoronaGameBoard newGameBoard, int depth, FanoronaGameBoard.Move newMove)
+	{
+		gameBoard = newGameBoard;
+        value = Integer.MIN_VALUE;
+		moveToThisBoard = newMove;
+        populateChildren(depth);
+	}
+	
     public void populateChildren (int depth)
     {
         // get all possible board states from current moves
@@ -187,7 +212,7 @@ class MaxNode implements MinimaxNode
             {
                 FanoronaGameBoard childBoard = new FanoronaGameBoard(gameBoard);
                 childBoard.move(childMoves.get(i));
-                MinNode childNode = new MinNode(childBoard, depth-1);
+                MinNode childNode = new MinNode(childBoard, depth-1, childMoves.get(i));
 
                 children.add(childNode);
             }
@@ -258,6 +283,11 @@ class MaxNode implements MinimaxNode
     {
         return false;
     }
+	
+	public FanoronaGameBoard.Move getMove()
+	{
+		return moveToThisBoard;
+	}
 
     public void print ()
     {
