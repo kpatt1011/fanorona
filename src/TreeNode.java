@@ -39,16 +39,16 @@ class MinNode implements MinimaxNode
 
     public MinNode (FanoronaGameBoard newGameBoard, int depth)
 	{
-		gameBoard = newGameBoard;
+		gameBoard = new FanoronaGameBoard(newGameBoard);
         value = Integer.MAX_VALUE;
         populateChildren(depth);
 	}
 	
 	public MinNode (FanoronaGameBoard newGameBoard, int depth, FanoronaGameBoard.Move newMove)
 	{
-		gameBoard = newGameBoard;
+		gameBoard = new FanoronaGameBoard(newGameBoard);
         value = Integer.MAX_VALUE;
-		moveToThisBoard = newMove;
+		moveToThisBoard = new FanoronaGameBoard(newMove);
         populateChildren(depth);
 	}
 	
@@ -194,9 +194,9 @@ class MaxNode implements MinimaxNode
 	
 	public MaxNode (FanoronaGameBoard newGameBoard, int depth, FanoronaGameBoard.Move newMove)
 	{
-		gameBoard = newGameBoard;
+		gameBoard = new FanoronaGameBoard(newGameBoard);
         value = Integer.MIN_VALUE;
-		moveToThisBoard = newMove;
+		moveToThisBoard = new FanoronaGameBoard.Move(newMove);
         populateChildren(depth);
 	}
 	
