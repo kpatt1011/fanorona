@@ -4,36 +4,14 @@ import java.util.*;
 
 Current TODO
 
-port number > 1024
-try{
-serverSocket = new ServerSocket(PortNumToBind)
-}
-catch
-{
-	System.exit(-1)
-	}
-
-
------
-
-Socket clientSocket = new ServerSocket()
-
-_______
-
-c_socket = new socket("server addr", portNum)
-
-
-clientSocket.getInputstream
-			getOutputstream
-
-			bytep[] buff = new byte[1024]
-			sockOutpute.write
-
-CLOSE THE SOCKET!
-
-
+networked play
 
 DONE
+check win/draw conditions
+turn number/limit
+get winning player or tie
+sacrifice moves
+change board sizes
 
 pieces can move anywhere when unable to capture
 pieces can only make legal moves
@@ -47,20 +25,6 @@ test if any possible capture during piaka move
 pass function
 
 FUTURE SPRINTS:::
-
-check win/draw conditions
-turn number/limit
-networked play
-change board sizes
-get winning player or tie
-sacrifice moves
-
-
--------
-server
-parser
-timer
-interpreter
 
 */
 
@@ -213,6 +177,11 @@ class FanoronaGameBoard
 		else
 
 			return Player.One;
+	}
+
+	public int getTurnNumber()
+	{
+		return totalTurns;
 	}
 
 	public boolean isGameOver()
@@ -893,7 +862,10 @@ class FanoronaGameBoard
 			Pair<Integer,Integer> directionMoved = getDirectionMoved();
 
 			//weak points can only move in the cardinal directions
-			if ( Util.isOdd(start.x + start.y) )
+			int sizeDifference = (Math.abs(BOARD_LENGTH - BOARD_WIDTH));
+			boolean isShiftSize = sizeDifference == 2 || sizeDifference == 6 || sizeDifference == 10;
+
+			if ( (Util.isOdd(start.x + start.y) && ! isShiftSize) || (isShiftSize && Util.isEven(start.x + start.y)) )
 			{
 				return
 						directionMoved.equals(new Pair<Integer,Integer>(1,0))

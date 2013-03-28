@@ -32,6 +32,41 @@ public class FanoronaGameBoardTest {
 	}
 
 	@Test
+	public void test_BoardSizes()
+	{
+		/*
+		for (int i = 1; i < 13; i += 2)
+			for (int j = 1; j < 13; j += 2)
+			{
+				FanoronaGameBoard fgb = new FanoronaGameBoard(i,j);
+				List<String> strings = buildBoardStringList(fgb);
+				String board = "";
+				for (String str : strings)
+					board += str + "\n";
+				System.out.println( board );
+			}
+		*/
+	}
+
+	@Test
+	public void test_VariableBoardSizeRun()
+	{
+		int BoardWidth = 9;
+		int BoardLength = 5;
+		FanoronaGameBoard fgb = new FanoronaGameBoard(BoardWidth, BoardLength);
+
+		while (fgb.isGameOver() == false)
+		{
+			randomAI(fgb);
+			actualAI(fgb, 2);
+		}
+
+		System.out.println("Game Ended on Turn: " + fgb.getTurnNumber() + "/" + fgb.MAX_TURNS);
+		System.out.println( "Winner is: " + fgb.playerToString(fgb.getWinner()));
+
+	}
+
+	@Test
 	public void test_autoPlayRandom()
 	{
 /*
@@ -67,6 +102,7 @@ public class FanoronaGameBoardTest {
 	@Test
 	public void test_AI()
 	{
+/*
 		FanoronaGameBoard fgb = new FanoronaGameBoard();
 		FanoronaGameBoard.MoveResult result;
 		Random rng = new Random();
@@ -80,21 +116,14 @@ public class FanoronaGameBoardTest {
 			if (fgb.isGameOver())
 				break;
 
-			result = FanoronaGameBoard.MoveResult.Success;
-			while (result == FanoronaGameBoard.MoveResult.Success)
-			{
-				MaxNode testRoot = new MaxNode (fgb);
-				MinimaxTree testTree = new MinimaxTree (testRoot, 1);
-
-				result = printBoardMove(fgb, testTree.getIdealMove(), true);
-			}
+			actualAI(fgb,2);
 			i++;
 		}
 
 		System.out.println("Total Turns: " + i);
 		System.out.println("Max Turns: " + fgb.MAX_TURNS);
 		System.out.println( "Winner is: " + fgb.playerToString(fgb.getWinner()));
-
+*/
 	}
 
 	//Test that the getBoard function.
@@ -219,6 +248,8 @@ public class FanoronaGameBoardTest {
 			String s = "  ";
 			for (int j = 0; j < l.get(i).length() - 2; j++)
 			{
+				int sizeDifference = (Math.abs(fgb.BOARD_LENGTH - fgb.BOARD_WIDTH));
+				boolean isShiftSize = sizeDifference == 2 || sizeDifference == 6 || sizeDifference == 10;
 				switch((j % 4))
 				{
 					case 0:
@@ -226,9 +257,25 @@ public class FanoronaGameBoardTest {
 					case 2:
 						s += "|"; break;
 					case 1:
-						s += (Util.isEven(i)) ? "\\" : "/" ; break;
+						if (Util.isEven(i) && isShiftSize)
+							s += "/";
+						else if (Util.isEven(i))
+							s += "\\";
+						else if (isShiftSize)
+							s += "\\";
+						else
+							s += "/";
+						break;
 					case 3:
-						s += (Util.isEven(i)) ? "/" : "\\" ; break;
+						if (Util.isEven(i) && isShiftSize)
+							s += "\\";
+						else if (Util.isEven(i))
+							s += "/";
+						else if (isShiftSize)
+							s += "/";
+						else
+							s += "\\";
+						break;
 					default:
 						s += "e"; break;
 				}
@@ -237,6 +284,18 @@ public class FanoronaGameBoardTest {
 		}
 		l.remove(l.size()-1);
 		return l;
+	}
+
+	void actualAI(FanoronaGameBoard fgb, int depth)
+	{
+		FanoronaGameBoard.MoveResult result = FanoronaGameBoard.MoveResult.Success;
+		while (result == FanoronaGameBoard.MoveResult.Success)
+		{
+			MaxNode testRoot = new MaxNode (fgb);
+			MinimaxTree testTree = new MinimaxTree (testRoot, depth);
+
+			result = printBoardMove(fgb, testTree.getIdealMove(), true);
+		}
 	}
 
 	void randomAI(FanoronaGameBoard fgb)
