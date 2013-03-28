@@ -68,29 +68,31 @@ public class FanoronaGameBoardTest {
 	public void test_AI()
 	{
 		FanoronaGameBoard fgb = new FanoronaGameBoard();
+		FanoronaGameBoard.MoveResult result;
 		Random rng = new Random();
 		int i = 0;
 
-		while (true)
+		while (fgb.isGameOver() == false)
 		{
-			List<FanoronaGameBoard.Move> moves = fgb.getAllPossibleMoves();
-			printBoardMove(fgb, moves.get(rng.nextInt(100) % moves.size()), true);
-
+			randomAI(fgb);
 			i++;
+
 			if (fgb.isGameOver())
 				break;
 
-			MaxNode testRoot = new MaxNode (fgb);
-			MinimaxTree testTree = new MinimaxTree (testRoot, 1);
+			result = FanoronaGameBoard.MoveResult.Success;
+			while (result == FanoronaGameBoard.MoveResult.Success)
+			{
+				MaxNode testRoot = new MaxNode (fgb);
+				MinimaxTree testTree = new MinimaxTree (testRoot, 1);
 
-			printBoardMove(fgb, testTree.getIdealMove(), true);
-
+				result = printBoardMove(fgb, testTree.getIdealMove(), true);
+			}
 			i++;
-			if (fgb.isGameOver())
-				break;
 		}
 
 		System.out.println("Total Turns: " + i);
+		System.out.println("Max Turns: " + fgb.MAX_TURNS);
 		System.out.println( "Winner is: " + fgb.playerToString(fgb.getWinner()));
 
 	}
@@ -136,7 +138,7 @@ public class FanoronaGameBoardTest {
 			System.out.println(move.toString());
 	}
 
-	private void printBoardMove(FanoronaGameBoard fgb, FanoronaGameBoard.Move move, boolean showLines)
+	private FanoronaGameBoard.MoveResult printBoardMove(FanoronaGameBoard fgb, FanoronaGameBoard.Move move, boolean showLines)
 	{
 
 
@@ -199,6 +201,7 @@ public class FanoronaGameBoardTest {
 		System.out.println("------------------------------------------------------------------------");
 		System.out.println();
 
+		return result;
 	}
 
 	//Build a game board with lines indicating strength
@@ -234,6 +237,59 @@ public class FanoronaGameBoardTest {
 		}
 		l.remove(l.size()-1);
 		return l;
+	}
+
+	void randomAI(FanoronaGameBoard fgb)
+	{
+		Random rng = new Random();
+		FanoronaGameBoard.MoveResult result = FanoronaGameBoard.MoveResult.Success;
+		boolean pass = false;
+
+		while ( result == FanoronaGameBoard.MoveResult.Success )
+		{
+			List<FanoronaGameBoard.Move> moves = fgb.getAllPossibleMoves();
+			FanoronaGameBoard.Move move;
+			while (true)
+			{
+				int index = rng.nextInt(100) % moves.size();
+				move = moves.get(index);
+
+				//take the last possible move
+				if (moves.size() == 1)
+					break;
+
+				//there are a lot of sacrifice options
+				// rarely is it a good choice
+				if ( move.isSacrifice() )
+				{
+					//take a sacrifice 3% of the time
+					if ( rng.nextInt(30) == 0 )
+						break;
+					else
+						moves.remove(index);
+				}
+				//pass 2% of the time
+				else if ( rng.nextInt(50) == 0 )
+				{
+					pass = true;
+					break;
+				}
+				//otherwise take it
+				else
+					break;
+			}
+			//System.out.println("RNG IS PLAYER: " + fgb.playerToString(fgb.getCurrentPlayer()));
+
+			if (pass)
+			{
+				System.out.println("Player " + fgb.playerToString(fgb.getCurrentPlayer()) + " Passes");
+				System.out.println("------------------------------------------------------------------------");
+				fgb.pass();
+				break;
+			}
+			else
+				result = printBoardMove(fgb, move, true);
+		}
 	}
 
 

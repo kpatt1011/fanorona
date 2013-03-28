@@ -15,16 +15,16 @@ if javac -classpath ./:./build/:junit-4.10.jar -d ./build/ ./src/*.java;
 		exit
 fi
 
-echo -ne "Compiling the unit tests...\n"
+#echo -ne "Compiling the unit tests...\n"
 
 #compile all the tests
-if javac -classpath ./:./build/:junit-4.10.jar -d ./test_build/ ./test_src/*.java;
-	then
-		echo -ne $SUCCESS
-	else
-		echo -ne $FAILURE
-		exit
-fi
+#if javac -classpath ./:./build/:junit-4.10.jar -d ./test_build/ ./test_src/*.java;
+#	then
+#		echo -ne $SUCCESS
+#	else
+#		echo -ne $FAILURE
+#		exit
+#fi
 
 echo -ne "Running the unit tests...\n\n"
 echo -ne "-----------------------------\n"

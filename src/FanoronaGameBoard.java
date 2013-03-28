@@ -66,11 +66,11 @@ interpreter
 
 class FanoronaGameBoard
 {
-	public static final int BOARD_WIDTH = 9;
-	public static final int BOARD_LENGTH = 5;
-	private static final int BOARD_CENTER_WIDTH = (int) Math.ceil(BOARD_WIDTH  / 2);
-	private static final int BOARD_CENTER_LENGTH = (int) Math.ceil(BOARD_LENGTH / 2);
-	private static final int MAX_TURNS = BOARD_LENGTH * 10;
+	public final int BOARD_WIDTH;
+	public final int BOARD_LENGTH;
+	private final int BOARD_CENTER_WIDTH;
+	private final int BOARD_CENTER_LENGTH;
+	public final int MAX_TURNS;
 
 	private LinkedList< LinkedList<Point> >   gameBoard                =
 		new LinkedList< LinkedList<Point> >();
@@ -94,6 +94,17 @@ class FanoronaGameBoard
 
 	public FanoronaGameBoard()
 	{
+		this(9,5);
+	}
+
+	public FanoronaGameBoard(int width, int length)
+	{
+		BOARD_WIDTH = width;
+		BOARD_LENGTH = length;
+		BOARD_CENTER_WIDTH = (int) Math.ceil(BOARD_WIDTH  / 2);
+		BOARD_CENTER_LENGTH = (int) Math.ceil(BOARD_LENGTH / 2);
+		MAX_TURNS = BOARD_LENGTH * 10;
+
 		for ( int i = 0; i < BOARD_LENGTH ; i++ )
 		{
 			gameBoard.add(new LinkedList<Point>());
@@ -143,16 +154,22 @@ class FanoronaGameBoard
 	//deep copy constructor
 	public FanoronaGameBoard(FanoronaGameBoard fgb)
 	{
-
-
+		//copy constants
+		BOARD_WIDTH = fgb.BOARD_WIDTH;
+		BOARD_LENGTH = fgb.BOARD_LENGTH;
+		BOARD_CENTER_WIDTH = fgb.BOARD_CENTER_WIDTH;
+		BOARD_CENTER_LENGTH = fgb.BOARD_CENTER_LENGTH;
+		MAX_TURNS = fgb.MAX_TURNS;
 
 		totalTurns = fgb.totalTurns;
 		currentPlayer = fgb.currentPlayer;
 		playerMovingAgain = fgb.playerMovingAgain;
 
+		//copy last piece moved
 		if (fgb.playerLastPieceMoved != null)
 			playerLastPieceMoved = new Coordinate(fgb.playerLastPieceMoved);
 
+		//copy last direction moved
 		if (fgb.playerLastDirectionMoved != null)
 			playerLastDirectionMoved = new
 			     Pair<Integer,Integer>
@@ -161,9 +178,11 @@ class FanoronaGameBoard
 			      fgb.playerLastDirectionMoved.second.intValue()
 			     );
 
+		//copy recent moves
 		for (Move move : fgb.playerMovesThisTurn)
 			playerMovesThisTurn.add(new Move(move));
 
+		//copy board
 		for ( int i = 0; i < BOARD_LENGTH ; i++ )
 		{
 			gameBoard.add(new LinkedList<Point>());
@@ -171,6 +190,7 @@ class FanoronaGameBoard
 				gameBoard.get(i).add(new Point(new Coordinate(j,i), fgb.getPointAt(j, i).getState()));
 		}
 
+		//copy sacrifice moves
 		for (Pair<Move,Integer> pair : fgb.recentSacrificeMoves)
 			recentSacrificeMoves.add(new Pair<Move,Integer>(new Move(pair.first), new Integer(pair.second.intValue())));
 	}
@@ -197,7 +217,7 @@ class FanoronaGameBoard
 
 	public boolean isGameOver()
 	{
-		return (getAllPossibleMoves().size() == 0 || 	totalTurns == MAX_TURNS);
+		return (getAllPossibleMoves().size() == 0 || totalTurns == MAX_TURNS);
 	}
 
 	public Player getWinner()
@@ -315,7 +335,14 @@ class FanoronaGameBoard
 		if ( move.isValid() )
 		{
 			if (move.isCapture())
+			{
 				capture(move);
+			}
+			else if (move.isPaika())
+			{
+				getPointAt(move.end).setState( getPointAt(move.start).getState() );
+				getPointAt(move.start).setState( Point.State.isEmpty );
+			}
 			else if (move.isSacrifice())
 			{
 				getPointAt(move.start).setState( Point.State.isOccupiedBySacrifice );
@@ -328,7 +355,7 @@ class FanoronaGameBoard
 			playerMovesThisTurn.add(move);
 			playerLastPieceMoved = move.end;
 
-			if ( captureMoveExists(move.end) == false)
+			if ( move.isCapture() == false || captureMoveExists(move.end) == false)
 			{
 				ListIterator<Pair<Move,Integer>> itr = recentSacrificeMoves.listIterator();
 				//remove tokens sacrificed last turn
@@ -604,8 +631,20 @@ class FanoronaGameBoard
 
 		LinkedList<Point> row = gameBoard.get(rowNumber);
 
+		List<Integer> recentlyVisited = new LinkedList<Integer>();
+		for (Move move : playerMovesThisTurn)
+		{
+			if (move.start.y == rowNumber)
+				recentlyVisited.add(move.start.x);
+		}
+
 		for (int j = 0; j < BOARD_WIDTH; j++ )
-			string += row.get(j).toString() + " ";
+		{
+			if (recentlyVisited.contains(new Integer(j)))
+				string += "▪ ";
+			else
+				string += row.get(j).toString() + " ";
+		}
 
 		string = string.substring(0, string.length() - 1);
 
