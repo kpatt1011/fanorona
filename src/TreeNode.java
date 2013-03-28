@@ -48,7 +48,7 @@ class MinNode implements MinimaxNode
 	{
 		gameBoard = new FanoronaGameBoard(newGameBoard);
         value = Integer.MAX_VALUE;
-		moveToThisBoard = new FanoronaGameBoard(newMove);
+		moveToThisBoard = new FanoronaGameBoard.move(newMove);
         populateChildren(depth);
 	}
 	
