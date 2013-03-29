@@ -57,7 +57,9 @@ public class FanoronaGameBoardTest {
 
 		while (fgb.isGameOver() == false)
 		{
+			//System.out.println(fgb.getNumberPiecesLeft(FanoronaGameBoard.Player.One));
 			randomAI(fgb);
+			//System.out.println(fgb.getNumberPiecesLeft(FanoronaGameBoard.Player.Two));
 			actualAI(fgb, 2);
 		}
 
