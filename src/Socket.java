@@ -10,15 +10,11 @@ public class Socket {
 
 	private FanoronaGameBoard masterGameBoard;
 	
-	public void establishServerConnection()
+	private static void serverInteractions(ServerSocket s)
 	{
-		try { 
-			ServerSocket server = new ServerSocket(5000);
-			} catch (IOException e) {
-			System.out.println("Could not listen on port: 5000"); 
-			System.exit(-1); 
-			}
+		
 	}
+
 	public static void main(String[] args) {
 		String gameType="";
 		InputStreamReader inputStream= new InputStreamReader(System.in);
@@ -31,8 +27,22 @@ public class Socket {
 			System.out.println("Error, couldn't read keyboard");
 		}
 		
-			
-
+      /*interactions for socket */			
+       if(gameType.equals("server"))
+       {
+   		try { 
+			ServerSocket server = new ServerSocket(5000);
+			System.out.println("listening to port 5000...");
+			Socket.serverInteractions(server);
+			server.close();
+			System.out.println("connection terminated");
+			} catch (IOException e) {
+			System.out.println("Could not listen on port: 5000"); 
+			System.exit(-1); 
+			}
+   		
+   		
+       }
 	}
 
 }
