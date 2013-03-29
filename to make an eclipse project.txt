@@ -1,0 +1,25 @@
+1. Right click on the project -> new -> Folder.
+
+2. In the dialog box shown, click on the Advanced button, if the advanced section is not expanded. This will expand the advanced section in the dialog box.
+
+3.Now check the checkbox with label : “Link to folder in the file system”. This will enable the text box for entering the path and the Browse and Variables button.
+
+4.Now either enter the path to the folder to which you need to link in the text box or select the folder using the “Browse” button.
+
+5. Click Finish.
+
+
+
+
+
+If you're opening eclipse for the first time, it should ask you to designate a workspace folder.
+i suggest just specifying this on your computer outside of your github folder. that way you can link 
+the project folder from the appropriate directory(i am not sure if eclipse uses full file pathnames, so it 
+may look for something like C:/users/Ryan/Github on everyone's computer if I make a workspace in the github 
+folder. 
+
+once you specify the workspace for eclipse(just a folder where you will keep all eclipse projects), create 
+a new project and save it to your workspace, and then just link the src folder from github using the directions above.
+this will look in your github folder for the source files every time you open eclipse, so if you pull fresh files from
+github and then open up eclipse there shouldn't be a need to re link the folder. 
+
