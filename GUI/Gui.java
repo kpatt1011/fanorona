@@ -1,8 +1,11 @@
 import java.awt.*;
 import java.util.*;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
 import javax.swing.JComponent;
 import javax.swing.JButton;
+import javax.imageio.ImageIO;
+import java.io.*;
 import javax.swing.*;
 
 
@@ -10,6 +13,7 @@ import javax.swing.*;
 class Gui extends JComponent {
 	
 		static Board board;
+		private BufferedImage image;
 		
     public Gui(){
 		
@@ -68,6 +72,18 @@ class Gui extends JComponent {
     	
 			board = new Board(g);
       board.display_pieces(g);
+			
+			// Code block to read in an image file for a piece
+			
+			  try {                
+          image = ImageIO.read(new File("black.png")); 
+       } catch (IOException ex) {
+            // handle exception...
+       }
+			
+			
+			g.drawImage(image,20,20,null); // This should add a black
+			
 			drawScoreboard(g);
 			
 			

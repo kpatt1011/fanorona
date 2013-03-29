@@ -1,6 +1,7 @@
 import java.awt.*;
 import java.util.*;
 
+
 // The GUI class for the representation of a board
 
 public class Board {
