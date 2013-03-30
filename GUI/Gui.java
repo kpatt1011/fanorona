@@ -14,11 +14,12 @@ class Gui extends JComponent {
 	
 		static Board board;
 		private BufferedImage image;
+		private FanoronaGameBoard gameBoard;
 		
     public Gui(){
 		
 			drawStartScreen();
-		
+			
 	
 			
     }
@@ -49,6 +50,12 @@ class Gui extends JComponent {
                      window.dispose();
 
                  }
+								 
+					
+					
+					
+				
+				
         });
 			
 			// Adding to JFrame
@@ -73,26 +80,9 @@ class Gui extends JComponent {
 			board = new Board(g);
       board.display_pieces(g);
 			
-			// Code block to read in an image file for a piece
-			
-			  try {                
-          image = ImageIO.read(new File("black.png")); 
-       } catch (IOException ex) {
-            // handle exception...
-       }
-			
-			
-			g.drawImage(image,20,20,null); // This should add a black
 			
 			drawScoreboard(g);
-			
-			
-		
-				
-					
-		
-			
-			
+						
     }
 		
 		// Draws start screen. With rules and instructions
