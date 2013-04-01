@@ -159,12 +159,14 @@ public class SocketMain {
 			int timeLimit =0;
 			int boardWidth=0;
 			int boardHeight=0;
+			String playerNumber="";
 			if(serverResponse.startsWith("INFO") || serverResponse.startsWith("info"))
 			{
 			  serverResponse.replaceAll("//s","");
 			  serverResponse=serverResponse.substring(4);
 			  boardWidth = Integer.parseInt(serverResponse.substring(0,1));
 			  boardHeight = Integer.parseInt(serverResponse.substring(1,2));
+			  playerNumber= serverResponse.substring(2,3);
 			  timeLimit = Integer.parseInt(serverResponse.substring(3));
 			  
 			}
@@ -172,8 +174,142 @@ public class SocketMain {
 			messageStream.print("READY\n");
 			messageStream.flush();
 			
+			/*get move from the server, 
+			 * apply it to the board 
+			 * make move using AI
+			 * send move information to the server */
+			while (!fg.isGameOver())
+			{
+				if(playerNumber.equals("F"))
+				{
+					/*play game as if it is first person to move*/
+					FanoronaGameBoard.Move clientMove = actualAI(fg,3);
+					fg.move(clientMove);
+					/*generate string to send to server informing it of the move from the AI*/
+					String moveString="";
+					if(clientMove.isApproach())
+					{
+						moveString=moveString + "A ";
+					} else if(clientMove.isWithdraw()){
+						moveString=moveString + "W ";				
+					} else if (clientMove.isPaika()) {
+						moveString=moveString + "P ";
+					}
+					moveString=moveString + clientMove.start.x.toString() + " ";
+					moveString=moveString + clientMove.start.y.toString() + " ";
+					moveString=moveString + clientMove.end.x.toString() + " ";
+					moveString=moveString + clientMove.end.x.toString() + " ";
+					
+					/*get move from server and apply it to the board*/
+					socketInput.read(buffer,0,1024);
+					serverResponse= new String(buffer);
+					if(serverResponse.startsWith("A") || serverResponse.startsWith("W") || serverResponse.startsWith("P"))
+					{
+						/*remove whitespace from command */
+						char [] command = serverResponse.toCharArray();
+						String c= command.toString();
+						c.replaceAll("//s", "");
+						command=c.toCharArray();
+						
+						Coordinate start = new Coordinate(Character.getNumericValue(command[1]), Character.getNumericValue(command[2]) );
+						Coordinate end = new Coordinate(Character.getNumericValue(command[3]), Character.getNumericValue(command[4]) );
+						FanoronaGameBoard.Move serverMove = fg.new Move(start,end);
+						if(serverMove.isValid())
+						{
+						fg.move(serverMove);
+						/*make successive capture moves designated by the server*/
+						if(serverMove.isCapture())
+						{
+							for(int i=4;i<command.length;i++)
+							{
+								if(command[i]=='+')
+								{
+								 start = new Coordinate(Character.getNumericValue(command[i+2]), Character.getNumericValue(command[i+3]) );
+							     end = new Coordinate(Character.getNumericValue(command[i+4]), Character.getNumericValue(command[i+5]) );
+							     serverMove = fg.new Move(start,end);
+								 if(serverMove.isValid())
+									{
+									 fg.move(serverMove);
+									}
+								 
+								}
+							}
+						}
+						} else {
+							messageStream.print("ILLEGAL\n");
+							messageStream.print("LOSER\n");
+							break;
+						}
+						
+					}
+
+					
+				} else{
+					/*play game as if it is the second person to move*/
+					/*get move from server and apply it to the board*/
+					socketInput.read(buffer,0,1024);
+					serverResponse= new String(buffer);
+					if(serverResponse.startsWith("A") || serverResponse.startsWith("W") || serverResponse.startsWith("P"))
+					{
+						/*remove whitespace from command */
+						char [] command = serverResponse.toCharArray();
+						String c= command.toString();
+						c.replaceAll("//s", "");
+						command=c.toCharArray();
+						
+						Coordinate start = new Coordinate(Character.getNumericValue(command[1]), Character.getNumericValue(command[2]) );
+						Coordinate end = new Coordinate(Character.getNumericValue(command[3]), Character.getNumericValue(command[4]) );
+						FanoronaGameBoard.Move serverMove = fg.new Move(start,end);
+						if(serverMove.isValid())
+						{
+						fg.move(serverMove);
+						/*make successive capture moves designated by the server*/
+						if(serverMove.isCapture())
+						{
+							for(int i=4;i<command.length;i++)
+							{
+								if(command[i]=='+')
+								{
+								 start = new Coordinate(Character.getNumericValue(command[i+2]), Character.getNumericValue(command[i+3]) );
+							     end = new Coordinate(Character.getNumericValue(command[i+4]), Character.getNumericValue(command[i+5]) );
+							     serverMove = fg.new Move(start,end);
+								 if(serverMove.isValid())
+									{
+									 fg.move(serverMove);
+									}
+								 
+								}
+							}
+						}
+						} else {
+							messageStream.print("ILLEGAL\n");
+							messageStream.print("LOSER\n");
+							break;
+						}
+					}
+					/*once server move is complete, make AI move*/
+					FanoronaGameBoard.Move clientMove = actualAI(fg,3);
+					fg.move(clientMove);
+					/*generate string to send to server informing it of the move from the AI*/
+					String moveString="";
+					if(clientMove.isApproach())
+					{
+						moveString=moveString + "A ";
+					} else if(clientMove.isWithdraw()){
+						moveString=moveString + "W ";				
+					} else if (clientMove.isPaika()) {
+						moveString=moveString + "P ";
+					}
+					moveString=moveString + clientMove.start.x.toString() + " ";
+					moveString=moveString + clientMove.start.y.toString() + " ";
+					moveString=moveString + clientMove.end.x.toString() + " ";
+					moveString=moveString + clientMove.end.x.toString() + " ";
+					
+				}
+				
+			}
 			
-           
+			gameSocket.close();
 			
 		}catch(UnknownHostException c){
 			System.out.println("Could not get information about host"); 
@@ -183,6 +319,7 @@ public class SocketMain {
 			System.out.println("Could not get IO connections for host"); 
 			System.exit(-1); 
 		}
+		
 	}
 	public static FanoronaGameBoard.Move actualAI(FanoronaGameBoard fgb, int depth)
 	{
