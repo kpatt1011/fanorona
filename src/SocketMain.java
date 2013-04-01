@@ -19,8 +19,8 @@ public class SocketMain {
 		/*run through entire game in this function, operating as the server for the game*/
 		/**/
 		/*parse string from input*/
-		byte[] buffer = new byte[255];
-		//char[] bufferToString = new char[255];
+		byte[] buffer = new byte[1024];
+		
 		try { 
 			ServerSocket server = new ServerSocket(socketNumber);
 			System.out.println("listening to port 5000...");
@@ -54,7 +54,7 @@ public class SocketMain {
 				 * run AI on fg board and then send the final move made as text across the 
 				 * 	socket to the client */
 				/*MAKE MOVE FROM THE CLIENT*/
-				socketInput.read(buffer,0,255);
+				socketInput.read(buffer,0,1024);
 				clientResponse= new String(buffer);
 				if(clientResponse.startsWith("A") || clientResponse.startsWith("W") || clientResponse.startsWith("P"))
 				{
@@ -132,9 +132,40 @@ public class SocketMain {
 	
 	/*if this game is to act as the client, handle interactions using this function*/
 	
-	private static void clientInteractions(String host, String portNum)
+	private static void clientInteractions(String host, int portNum)
 	{
-		
+	  /*set up socket with address and port number
+	   * read game information from server, set up initial gameboard
+	   * send 'READY' to server
+	   * parse string from server and make the appropriate move on the gameboard 
+	   * make AI move and send it to the server */	
+		byte[] buffer = new byte[1024];
+		try{
+			Socket gameSocket = new Socket(host,portNum);
+			System.out.println("successfully connected to the socket!\n");
+			InputStream socketInput = gameSocket.getInputStream();
+			OutputStream socketOutput = gameSocket.getOutputStream();
+			PrintStream messageStream = new PrintStream(socketOutput);
+			
+			/* get initial information from server */
+			socketInput.read(buffer,0,1024);
+			String serverResponse = new String(buffer);
+			/*ignore welcome statement from server */
+			if(serverResponse.length()<9 &&serverResponse.contains("WELCOME")|| serverResponse.contains("welcome")){
+				socketInput.read(buffer,0,1024);
+				serverResponse = new String(buffer);
+			}
+			/*parse info statement and use it to set up game board */
+			
+			
+		}catch(UnknownHostException c){
+			System.out.println("Could not get information about host"); 
+			System.exit(-1); 
+		}catch(IOException e)
+		{
+			System.out.println("Could not get IO connections for host"); 
+			System.exit(-1); 
+		}
 	}
 	public static FanoronaGameBoard.Move actualAI(FanoronaGameBoard fgb, int depth)
 	{
@@ -161,9 +192,24 @@ public class SocketMain {
        if(gameType.equals("server"))
        {
    		SocketMain.serverInteractions();
-       } else if(gameType.equals("client")){
+       } else if(gameType.equals("client")|| gameType.equals("CLIENT")){
     	   String hostName="";
-    	   String portNumber="";
+    	   int portNumber=0;
+    	   System.out.println("Enter a host name: ");
+    	   try{
+    		   hostName=in.readLine();
+        	   
+    			} catch(IOException e){
+    				System.out.println("Error, couldn't read from keyboard");
+    			}
+    	   System.out.println("\nEnter a port number: ");
+    	   try{
+    		   portNumber= Integer.parseInt(in.readLine());
+        	   
+    			} catch(IOException e){
+    				System.out.println("Error, couldn't read from keyboard");
+    			}
+    	 
     	   SocketMain.clientInteractions(hostName, portNumber);
        }
 	}
