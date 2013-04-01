@@ -129,6 +129,13 @@ public class SocketMain {
 		
 		
 	}
+	
+	/*if this game is to act as the client, handle interactions using this function*/
+	
+	private static void clientInteractions(String host, String portNum)
+	{
+		
+	}
 	public static FanoronaGameBoard.Move actualAI(FanoronaGameBoard fgb, int depth)
 	{
 		
@@ -154,6 +161,10 @@ public class SocketMain {
        if(gameType.equals("server"))
        {
    		SocketMain.serverInteractions();
+       } else if(gameType.equals("client")){
+    	   String hostName="";
+    	   String portNumber="";
+    	   SocketMain.clientInteractions(hostName, portNumber);
        }
 	}
 
