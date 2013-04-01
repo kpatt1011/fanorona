@@ -156,7 +156,24 @@ public class SocketMain {
 				serverResponse = new String(buffer);
 			}
 			/*parse info statement and use it to set up game board */
+			int timeLimit =0;
+			int boardWidth=0;
+			int boardHeight=0;
+			if(serverResponse.startsWith("INFO") || serverResponse.startsWith("info"))
+			{
+			  serverResponse.replaceAll("//s","");
+			  serverResponse=serverResponse.substring(4);
+			  boardWidth = Integer.parseInt(serverResponse.substring(0,1));
+			  boardHeight = Integer.parseInt(serverResponse.substring(1,2));
+			  timeLimit = Integer.parseInt(serverResponse.substring(3));
+			  
+			}
+			FanoronaGameBoard fg = new FanoronaGameBoard(boardWidth, boardHeight);
+			messageStream.print("READY\n");
+			messageStream.flush();
 			
+			
+           
 			
 		}catch(UnknownHostException c){
 			System.out.println("Could not get information about host"); 
@@ -178,6 +195,7 @@ public class SocketMain {
 
 	public static void main(String[] args) {
 		String gameType="";
+		
 		InputStreamReader inputStream= new InputStreamReader(System.in);
 		BufferedReader in = new BufferedReader(inputStream);
 		System.out.println("Welcome to Fanorona!\nPlease designate this game" +
