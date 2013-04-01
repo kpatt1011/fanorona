@@ -1,6 +1,7 @@
 import java.awt.*;
 import java.util.*;
 
+
 // The GUI class for the representation of a board
 
 public class Board {
@@ -10,17 +11,20 @@ public class Board {
 	ArrayList<Space> spaces; // All the spaces on the board
 	int remainingRed;
 	int remainingBlack;
+	FanoronaGameBoard gameBoard; // The FanoronaGameBoard class associated with the board
+
 	
 	// Constructs a new board with the starting piece layout
 	// Defines all the spaces on the board and puts the pieces in the proper spaces
 	 public Board(Graphics g) {
 		
+		gameBoard = new FanoronaGameBoard();
      pieces = new ArrayList<Piece> (64);
      spaces = new ArrayList<Space> (64);
 		 remainingRed=23;
 		 remainingBlack=23;
-	  	int x_location =20;
-    	int y_location = 20;
+	   int x_location = 50; // Top left corner of the board, x
+     int y_location = 50; // Top left corner of the board, y
     	
     	for(int i=0; i < 5; i++) {
     		
@@ -81,6 +85,33 @@ public class Board {
 	 
 	 void display_pieces(Graphics g) {
 	 
+	 for(int i= 0; i < gameBoard.BOARD_LENGTH; i++  ) {
+				
+				for(int j = 0; j < gameBoard.BOARD_WIDTH; j++) {
+						Point temp = gameBoard.getPointAt(j,i); // Get the point at the give x (width) and y (length)
+						
+						switch (temp.getState()) {
+							
+							case isOccupiedByBlack: 
+											Piece a = new Piece((j * 50) + 15, (i * 50) + 40 ,0,g);
+											a.display();
+											System.out.println("Black");
+										break;
+										
+							case isOccupiedByWhite: 
+											Piece b = new Piece((j * 50) + 15, (i * 50) + 40 ,1,g);
+											b.display();
+											System.out.println("White");
+										break;
+											
+						}
+					
+						
+					
+						
+				}
+	 
+	 }
 	 
 		 
 		// Display Pieces on board in starting arrangment
@@ -89,15 +120,13 @@ public class Board {
     		 int y= spaces.get(i).get_y();
     		 
     		 if(i <= 18 || i == 20 || i== 23 || i ==25) {
-    			Piece a = new Piece(x,y,0,g);
-         		a.display();
-         		pieces.add(a); // Add piece to array list of pieces
+    			
+         		
     		 }
     		 
     		 if(i == 17 || i == 19 || i == 21 || i >= 24) {
-    			Piece a = new Piece(x,y,1,g);
-          		a.display();
-          		pieces.add(a); // Add piece to array list of pieces
+    		
+          	
     		 }
     	 }
 	 }

@@ -1,8 +1,11 @@
 import java.awt.*;
 import java.util.*;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
 import javax.swing.JComponent;
 import javax.swing.JButton;
+import javax.imageio.ImageIO;
+import java.io.*;
 import javax.swing.*;
 
 
@@ -10,11 +13,13 @@ import javax.swing.*;
 class Gui extends JComponent {
 	
 		static Board board;
+		private BufferedImage image;
+		private FanoronaGameBoard gameBoard;
 		
     public Gui(){
 		
 			drawStartScreen();
-		
+			
 	
 			
     }
@@ -45,6 +50,12 @@ class Gui extends JComponent {
                      window.dispose();
 
                  }
+								 
+					
+					
+					
+				
+				
         });
 			
 			// Adding to JFrame
@@ -68,15 +79,10 @@ class Gui extends JComponent {
     	
 			board = new Board(g);
       board.display_pieces(g);
+			
+			
 			drawScoreboard(g);
-			
-			
-		
-				
-					
-		
-			
-			
+						
     }
 		
 		// Draws start screen. With rules and instructions
