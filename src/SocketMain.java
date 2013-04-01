@@ -1,6 +1,6 @@
 
 
-import static java.lang.System.*;
+
 import java.net.*;
 import java.net.Socket;
 import java.io.*;
@@ -34,10 +34,9 @@ public class SocketMain {
 			FanoronaGameBoard fg = new FanoronaGameBoard();
 			messageStream.print("WELCOME\n");
 			messageStream.flush();
-			messageStream.print("INFO 9 5 B 5000\n");
+			messageStream.print("INFO 9 5 F 5000\n");
 			messageStream.flush();
-			messageStream.print("F\n"); //client always goes first
-			messageStream.flush();
+
 			/* convert read bytes into a string 
 			 * keep reading bytes from input stream until "READY" message is received*/
 			String clientResponse = new String(buffer);
@@ -46,7 +45,8 @@ public class SocketMain {
 				socketInput.read(buffer,0,6);
 				clientResponse = new String(buffer);
 			}
-			
+			messageStream.print("BEGIN\n");
+			messageStream.flush();
 			/*send and receive messages over the socket until the game is over*/
 			while (!fg.isGameOver())
 			{
@@ -56,7 +56,23 @@ public class SocketMain {
 				/*MAKE MOVE FROM THE CLIENT*/
 				socketInput.read(buffer,0,1024);
 				clientResponse= new String(buffer);
-				if(clientResponse.startsWith("A") || clientResponse.startsWith("W") || clientResponse.startsWith("P"))
+				long elapsedTime =0;
+				if(clientResponse.equals("OK"))
+				{
+					long timeBegin = System.currentTimeMillis();
+					socketInput.read(buffer,0,1024);
+					clientResponse= new String(buffer);
+					 elapsedTime = System.currentTimeMillis()-timeBegin;
+				}
+				if(elapsedTime > 5000)
+				{
+					messageStream.print("TIME EXPIRED\n");
+					messageStream.print("LOSER\n");
+					break;
+				}
+				/*ignores OK response from client*/
+			
+				if(clientResponse.startsWith("A") || clientResponse.startsWith("W") || clientResponse.startsWith("S") || clientResponse.startsWith("P"))
 				{
 					/*remove whitespace from command */
 					char [] command = clientResponse.toCharArray();
@@ -88,6 +104,8 @@ public class SocketMain {
 							}
 						}
 					}
+					messageStream.print("OK\n");
+					messageStream.flush();
 					} else {
 						messageStream.print("ILLEGAL\n");
 						messageStream.print("LOSER\n");
@@ -110,13 +128,16 @@ public class SocketMain {
 					moveString=moveString + "W ";				
 				} else if (serverMove.isPaika()) {
 					moveString=moveString + "P ";
+				} else if(serverMove.isSacrifice()){
+					moveString=moveString + "S ";
 				}
                
 				moveString=moveString + serverMove.start.x.toString() + " ";
 				moveString=moveString + serverMove.start.y.toString() + " ";
 				moveString=moveString + serverMove.end.x.toString() + " ";
 				moveString=moveString + serverMove.end.x.toString() + " ";
-
+				messageStream.print(moveString);
+				messageStream.flush();
 			}
 
 			server.close();
@@ -156,7 +177,7 @@ public class SocketMain {
 				serverResponse = new String(buffer);
 			}
 			/*parse info statement and use it to set up game board */
-			int timeLimit =0;
+			long timeLimit =0;
 			int boardWidth=0;
 			int boardHeight=0;
 			String playerNumber="";
@@ -180,7 +201,7 @@ public class SocketMain {
 			 * send move information to the server */
 			while (!fg.isGameOver())
 			{
-				if(playerNumber.equals("F"))
+				if(playerNumber.equals("F")|| playerNumber.equals("W"))
 				{
 					/*play game as if it is first person to move*/
 					FanoronaGameBoard.Move clientMove = actualAI(fg,3);
@@ -194,16 +215,37 @@ public class SocketMain {
 						moveString=moveString + "W ";				
 					} else if (clientMove.isPaika()) {
 						moveString=moveString + "P ";
+					} else if (clientMove.isSacrifice()){
+						moveString=moveString + "S ";
 					}
 					moveString=moveString + clientMove.start.x.toString() + " ";
 					moveString=moveString + clientMove.start.y.toString() + " ";
 					moveString=moveString + clientMove.end.x.toString() + " ";
 					moveString=moveString + clientMove.end.x.toString() + " ";
+					messageStream.print(moveString);
+					messageStream.flush();
 					
 					/*get move from server and apply it to the board*/
+
 					socketInput.read(buffer,0,1024);
 					serverResponse= new String(buffer);
-					if(serverResponse.startsWith("A") || serverResponse.startsWith("W") || serverResponse.startsWith("P"))
+					long elapsedTime =0;
+					/*measure time between 'OK' response from server and the move from the server*/
+					if(serverResponse.equals("OK"))
+					{
+						long timeBegin = System.currentTimeMillis();
+						socketInput.read(buffer,0,1024);
+						elapsedTime = System.currentTimeMillis()-timeBegin;
+						serverResponse= new String(buffer);
+						 
+					}
+					if(elapsedTime > timeLimit)
+					{
+						messageStream.print("TIME EXPIRED\n");
+						messageStream.print("LOSER\n");
+						break;
+					}
+					if(serverResponse.startsWith("A") || serverResponse.startsWith("W") || serverResponse.startsWith("S") || serverResponse.startsWith("P"))
 					{
 						/*remove whitespace from command */
 						char [] command = serverResponse.toCharArray();
@@ -235,6 +277,8 @@ public class SocketMain {
 								}
 							}
 						}
+						messageStream.print("OK\n");
+						messageStream.flush();
 						} else {
 							messageStream.print("ILLEGAL\n");
 							messageStream.print("LOSER\n");
@@ -249,7 +293,23 @@ public class SocketMain {
 					/*get move from server and apply it to the board*/
 					socketInput.read(buffer,0,1024);
 					serverResponse= new String(buffer);
-					if(serverResponse.startsWith("A") || serverResponse.startsWith("W") || serverResponse.startsWith("P"))
+					long elapsedTime =0;
+					/*measure time between 'OK' response from server and the move from the server*/
+					if(serverResponse.equals("OK"))
+					{
+						long timeBegin = System.currentTimeMillis();
+						socketInput.read(buffer,0,1024);
+						elapsedTime = System.currentTimeMillis()-timeBegin;
+						serverResponse= new String(buffer);
+						 
+					}
+					if(elapsedTime > timeLimit)
+					{
+						messageStream.print("TIME EXPIRED\n");
+						messageStream.print("LOSER\n");
+						break;
+					}
+					if(serverResponse.startsWith("A") ||serverResponse.startsWith("S")|| serverResponse.startsWith("W") || serverResponse.startsWith("P"))
 					{
 						/*remove whitespace from command */
 						char [] command = serverResponse.toCharArray();
@@ -281,6 +341,8 @@ public class SocketMain {
 								}
 							}
 						}
+						messageStream.print("OK\n");
+						messageStream.flush();
 						} else {
 							messageStream.print("ILLEGAL\n");
 							messageStream.print("LOSER\n");
@@ -299,11 +361,15 @@ public class SocketMain {
 						moveString=moveString + "W ";				
 					} else if (clientMove.isPaika()) {
 						moveString=moveString + "P ";
+					} else if(clientMove.isSacrifice()){
+						moveString=moveString + "S ";
 					}
 					moveString=moveString + clientMove.start.x.toString() + " ";
 					moveString=moveString + clientMove.start.y.toString() + " ";
 					moveString=moveString + clientMove.end.x.toString() + " ";
 					moveString=moveString + clientMove.end.x.toString() + " ";
+					messageStream.print(moveString);
+					messageStream.flush();
 					
 				}
 				
