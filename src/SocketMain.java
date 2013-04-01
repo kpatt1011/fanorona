@@ -7,6 +7,8 @@ import java.io.*;
 
 
 
+
+
 public class SocketMain {
 
 
@@ -46,7 +48,31 @@ public class SocketMain {
 			/*send and receive messages over the socket until the game is over*/
 			while (!fg.isGameOver())
 			{
-				
+				/*
+				 * parse input 
+				 * make coordinate start and coordinate end 
+				 * make move object with start and end coordinate
+				 * apply move to fg board
+				 * run AI on fg board and then send the final move made as text across the 
+				 * 	socket to the client */
+				socketInput.read(buffer);
+				clientResponse= new String(buffer);
+				if(clientResponse.startsWith("A") || clientResponse.startsWith("W"))
+				{
+					char [] command = clientResponse.toCharArray();
+					Coordinate start = new Coordinate(Character.getNumericValue(command[1]), Character.getNumericValue(command[2]) );
+					Coordinate end = new Coordinate(Character.getNumericValue(command[3]), Character.getNumericValue(command[4]) );
+					FanoronaGameBoard.Move clientMove = fg.new Move(start,end);
+					if(clientMove.isValid())
+					{
+					fg.move(clientMove);
+					} else {
+						messageStream.print("ILLEGAL\n");
+						messageStream.print("LOSER\n");
+						break;
+					}
+					
+				}
 				
 			}
 
