@@ -36,6 +36,8 @@ public class SocketMain {
 			messageStream.flush();
 			messageStream.print("INFO 9 5 B 5000\n");
 			messageStream.flush();
+			messageStream.print("F\n"); //client always goes first
+			messageStream.flush();
 			/* convert read bytes into a string 
 			 * keep reading bytes from input stream until "READY" message is received*/
 			String clientResponse = new String(buffer);
@@ -49,23 +51,43 @@ public class SocketMain {
 			while (!fg.isGameOver())
 			{
 				/*
-				 * parse input 
-				 * make coordinate start and coordinate end 
-				 * make move object with start and end coordinate
-				 * apply move to fg board
 				 * run AI on fg board and then send the final move made as text across the 
 				 * 	socket to the client */
+				/*MAKE MOVE FROM THE CLIENT*/
 				socketInput.read(buffer);
 				clientResponse= new String(buffer);
-				if(clientResponse.startsWith("A") || clientResponse.startsWith("W"))
+				if(clientResponse.startsWith("A") || clientResponse.startsWith("W") || clientResponse.startsWith("P"))
 				{
+					/*remove whitespace from command */
 					char [] command = clientResponse.toCharArray();
+					String c= command.toString();
+					c.replaceAll("//s", "");
+					command=c.toCharArray();
+					
 					Coordinate start = new Coordinate(Character.getNumericValue(command[1]), Character.getNumericValue(command[2]) );
 					Coordinate end = new Coordinate(Character.getNumericValue(command[3]), Character.getNumericValue(command[4]) );
 					FanoronaGameBoard.Move clientMove = fg.new Move(start,end);
 					if(clientMove.isValid())
 					{
 					fg.move(clientMove);
+					/*make successive capture moves designated by the client*/
+					if(clientMove.isCapture())
+					{
+						for(int i=4;i<command.length;i++)
+						{
+							if(command[i]=='+')
+							{
+							 start = new Coordinate(Character.getNumericValue(command[i+2]), Character.getNumericValue(command[i+3]) );
+						     end = new Coordinate(Character.getNumericValue(command[i+4]), Character.getNumericValue(command[i+5]) );
+							 clientMove = fg.new Move(start,end);
+							 if(clientMove.isValid())
+								{
+								 fg.move(clientMove);
+								}
+							 
+							}
+						}
+					}
 					} else {
 						messageStream.print("ILLEGAL\n");
 						messageStream.print("LOSER\n");
@@ -73,6 +95,7 @@ public class SocketMain {
 					}
 					
 				}
+				  /*MAKE MOVE FROM THE SERVER*/
 				
 			}
 
