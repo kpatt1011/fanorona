@@ -117,7 +117,7 @@ public class SocketMain {
 				   * then:
 				   * print the move to the client across the socket
 				   * */
-				FanoronaGameBoard.Move serverMove = actualAI(fg,3);
+				FanoronaGameBoard.Move serverMove = actualAI(fg,5);
 				fg.move(serverMove);
 				/*generate string to send to client informing it of the move from the AI*/
 				String moveString="";
@@ -204,7 +204,7 @@ public class SocketMain {
 				if(playerNumber.equals("F")|| playerNumber.equals("W"))
 				{
 					/*play game as if it is first person to move*/
-					FanoronaGameBoard.Move clientMove = actualAI(fg,3);
+					FanoronaGameBoard.Move clientMove = actualAI(fg,5);
 					fg.move(clientMove);
 					/*generate string to send to server informing it of the move from the AI*/
 					String moveString="";
@@ -350,7 +350,7 @@ public class SocketMain {
 						}
 					}
 					/*once server move is complete, make AI move*/
-					FanoronaGameBoard.Move clientMove = actualAI(fg,3);
+					FanoronaGameBoard.Move clientMove = actualAI(fg,5);
 					fg.move(clientMove);
 					/*generate string to send to server informing it of the move from the AI*/
 					String moveString="";
