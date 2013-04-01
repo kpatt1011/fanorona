@@ -9,20 +9,21 @@ public class Board {
 
 	ArrayList<Piece> pieces; // All of the pieces currently on the board
 	ArrayList<Space> spaces; // All the spaces on the board
-	int remainingRed;
+	int remainingRed; 
 	int remainingBlack;
 	FanoronaGameBoard gameBoard; // The FanoronaGameBoard class associated with the board
 
 	
 	// Constructs a new board with the starting piece layout
 	// Defines all the spaces on the board and puts the pieces in the proper spaces
-	 public Board(Graphics g) {
+	 public Board(Graphics g, FanoronaGameBoard gb) {
 		
-		gameBoard = new FanoronaGameBoard();
+		gameBoard = gb;
      pieces = new ArrayList<Piece> (64);
      spaces = new ArrayList<Space> (64);
-		 remainingRed=23;
-		 remainingBlack=23;
+		 
+		 remainingRed=23; // Red pieces left on the board
+		 remainingBlack=23; // Black Pieces left on the board
 	   int x_location = 50; // Top left corner of the board, x
      int y_location = 50; // Top left corner of the board, y
     	
@@ -95,13 +96,11 @@ public class Board {
 							case isOccupiedByBlack: 
 											Piece a = new Piece((j * 50) + 15, (i * 50) + 40 ,0,g);
 											a.display();
-											System.out.println("Black");
 										break;
 										
 							case isOccupiedByWhite: 
 											Piece b = new Piece((j * 50) + 15, (i * 50) + 40 ,1,g);
 											b.display();
-											System.out.println("White");
 										break;
 											
 						}

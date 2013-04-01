@@ -7,6 +7,7 @@ import javax.swing.JButton;
 import javax.imageio.ImageIO;
 import java.io.*;
 import javax.swing.*;
+import java.util.List;
 
 
 
@@ -14,10 +15,15 @@ class Gui extends JComponent {
 	
 		static Board board;
 		private BufferedImage image;
-		private FanoronaGameBoard gameBoard;
+		private  static FanoronaGameBoard gameBoard;
+		private static FanoronaGameBoard.Player firstPlayer;
+		private static FanoronaGameBoard.Player secondPlayer;
 		
-    public Gui(){
-		
+    public Gui(FanoronaGameBoard gb){
+			
+			gameBoard = gb;
+			firstPlayer = gameBoard.getCurrentPlayer();
+			secondPlayer = gameBoard.getWaitingPlayer();
 			drawStartScreen();
 			
 	
@@ -26,23 +32,62 @@ class Gui extends JComponent {
     
 
     public static void main(String[] argS){
-    	//Gui G = new Gui();
-			
+    			
 			final JFrame window = new JFrame();
+			FanoronaGameBoard board = new FanoronaGameBoard();
+			
+			List<FanoronaGameBoard.Move> moves = board.getAllPossibleMoves();
+			
+			JPanel pnlButton = new JPanel(); // JPanel containing the board
+			
+			
+			FanoronaGameBoard.Move capture_move = moves.get(1);
+			
+			// Loop to create a buttons for all the possible moves
+			for(int i = 0; i < moves.size(); i++ ) {
+					
+					int x = ((moves.get(i).end.x) * 50) + 15;
+					int y = ((moves.get(i).end.y) * 50) + 40;
+					
+					JButton possibleMove = new JButton("");
+					possibleMove.setBounds(x,y,20,20);
+					pnlButton.add(possibleMove);			  
+
+					if(moves.get(i).isCapture()) {
+						
+						capture_move = moves.get(i);
+					}
+			}
+			
+			System.out.println(capture_move);
+			System.out.println(board.getNumberPiecesLeft(board.getWaitingPlayer()));
+			System.out.println(board.getNumberPiecesLeft(board.getCurrentPlayer()));
+		
+		  FanoronaGameBoard.MoveResult a = board.movePiece(capture_move);
+			
+			System.out.println(board.getNumberPiecesLeft(board.getWaitingPlayer()));
+			System.out.println(board.getNumberPiecesLeft(board.getCurrentPlayer()));
+		
+			
+			
 			window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-			window.setBounds(30, 30, 500, 500);
-			window.getContentPane().add(new Gui());
+			window.setSize(500, 500);
+			window.getContentPane().add(new Gui(board));
 			window.setVisible(true);
     	
-			JPanel pnlButton = new JPanel();
+			
 			JButton btnAddFlight = new JButton ("X");
+			
 			
 		  //FlightInfo setbounds
 			btnAddFlight.setBounds(440, 0, 50, 30);
+		
 
 			//JPanel bounds
 			pnlButton.setBounds(800, 800, 200, 100);
 			pnlButton.setLayout(null);
+			
+		
 			
 			btnAddFlight.addActionListener(new ActionListener() {
                  public void actionPerformed(ActionEvent e)
@@ -51,25 +96,23 @@ class Gui extends JComponent {
 
                  }
 								 
-					
-					
-					
-				
-				
         });
 			
 			// Adding to JFrame
 			pnlButton.add(btnAddFlight);
+			pnlButton.setBackground(Color.WHITE);
+			
 			window.add(pnlButton);
 			
-			window.setBackground(Color.WHITE);
+			
       window.setSize(500, 500);
+
 			
       
 				
 			window.setVisible(true);
-				
-			
+			pnlButton.validate();
+			pnlButton.repaint();
 				
 				
      
@@ -77,7 +120,7 @@ class Gui extends JComponent {
     
     public void paint(Graphics g) {
     	
-			board = new Board(g);
+			board = new Board(g, gameBoard);
       board.display_pieces(g);
 			
 			
@@ -109,8 +152,8 @@ class Gui extends JComponent {
 			g.drawString("Black",100,375);
 			
 			// Display the Number of Pieces Remaining
-			int red  = board.getPiecesRemaining(1);
-			int black = board.getPiecesRemaining(0);
+			int red  = gameBoard.getNumberPiecesLeft(firstPlayer);
+			int black = gameBoard.getNumberPiecesLeft(secondPlayer);
 			String numRed = Integer.toString(red);
 			String numBlack = Integer.toString(black);
 			
