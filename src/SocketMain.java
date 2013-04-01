@@ -54,7 +54,7 @@ public class SocketMain {
 				 * run AI on fg board and then send the final move made as text across the 
 				 * 	socket to the client */
 				/*MAKE MOVE FROM THE CLIENT*/
-				socketInput.read(buffer);
+				socketInput.read(buffer,0,255);
 				clientResponse= new String(buffer);
 				if(clientResponse.startsWith("A") || clientResponse.startsWith("W") || clientResponse.startsWith("P"))
 				{
@@ -95,8 +95,28 @@ public class SocketMain {
 					}
 					
 				}
-				  /*MAKE MOVE FROM THE SERVER*/
-				
+				  /*MAKE MOVE FROM THE SERVER
+				   * then:
+				   * print the move to the client across the socket
+				   * */
+				FanoronaGameBoard.Move serverMove = actualAI(fg,3);
+				fg.move(serverMove);
+				/*generate string to send to client informing it of the move from the AI*/
+				String moveString="";
+				if(serverMove.isApproach())
+				{
+					moveString=moveString + "A ";
+				} else if(serverMove.isWithdraw()){
+					moveString=moveString + "W ";				
+				} else if (serverMove.isPaika()) {
+					moveString=moveString + "P ";
+				}
+               
+				moveString=moveString + serverMove.start.x.toString() + " ";
+				moveString=moveString + serverMove.start.y.toString() + " ";
+				moveString=moveString + serverMove.end.x.toString() + " ";
+				moveString=moveString + serverMove.end.x.toString() + " ";
+
 			}
 
 			server.close();
@@ -109,7 +129,13 @@ public class SocketMain {
 		
 		
 	}
-	
+	public static FanoronaGameBoard.Move actualAI(FanoronaGameBoard fgb, int depth)
+	{
+		
+			MaxNode testRoot = new MaxNode (fgb);
+			MinimaxTree testTree = new MinimaxTree (testRoot, depth);
+            return testTree.getIdealMove();
+	}
 	
 
 	public static void main(String[] args) {
