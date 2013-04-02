@@ -1,36 +1,13 @@
-import java.util.*;
-
 /*
 
-Current TODO
+Authored By: Benjamin Martin
 
-
-getPiecesRemaining(player)
-networked play
-
-
-
-DONE
-check win/draw conditions
-turn number/limit
-get winning player or tie
-sacrifice moves
-change board sizes
-
-pieces can move anywhere when unable to capture
-pieces can only make legal moves
-	withdrawal
-	advancement
-	stop from moving in previous direction
-capture pieces and remove from board
-piece can capture
-	propogate in line
-test if any possible capture during piaka move
-pass function
-
-FUTURE SPRINTS:::
+EXCEPT boardEvaluation()
+	Authored By: Ryan Coverick
 
 */
+
+import java.util.*;
 
 class FanoronaGameBoard
 {
@@ -279,16 +256,17 @@ class FanoronaGameBoard
 		Coordinate nextPiece = null;
 		Point.State pieceColor = null;
 
-		//capture all pieces in a line
-
+		//determine direction of capture
 		if ( move.isApproach() )
 			nextPiece = new Coordinate(end.x + direction.first, end.y + direction.second);
 		else
 			nextPiece = new Coordinate(start.x - direction.first, start.y - direction.second);
 
+		//get the color of the tokens removing
 		if ( isOnBoard(nextPiece) )
 			pieceColor = getPointAt(nextPiece).getState();
 
+		//remove the pieces
 		while ( isOnBoard(nextPiece) && getPointAt(nextPiece).getState() == pieceColor )
 		{
 			getPointAt(nextPiece).setState( Point.State.isEmpty );
@@ -310,7 +288,7 @@ class FanoronaGameBoard
 	/*****************/
 
 	//Backwards compatible wrapper
-	// hope to phase out soon
+	// hope to phase out
 	public MoveResult movePiece(Move move)
 	{
 		return  move(move);
@@ -347,6 +325,7 @@ class FanoronaGameBoard
 			playerMovesThisTurn.add(move);
 			playerLastPieceMoved = move.end;
 
+			//determine if they can go again
 			if ( move.isCapture() == false || captureMoveExists(move.end) == false)
 			{
 				ListIterator<Pair<Move,Integer>> itr = recentSacrificeMoves.listIterator();
@@ -375,7 +354,7 @@ class FanoronaGameBoard
 	/**********************/
 
 	//Returns a list of all possible moves to make this turn
-	// Will contain only Capture moves or only Paika moves
+	// Capture and Paika moves are exclusive to one another
 	public List<Move> getAllPossibleMoves()
 	{
 		Point.State token;

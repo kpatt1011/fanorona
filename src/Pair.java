@@ -1,3 +1,8 @@
+/*
+
+Authored By: Benjamin Martin
+
+*/
 public final class Pair<T1, T2>
 {
 	public final T1 first;

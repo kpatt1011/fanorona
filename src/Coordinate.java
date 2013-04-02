@@ -1,3 +1,8 @@
+/*
+
+Authored By: Benjamin Martin
+
+*/
 public final class Coordinate
 {
 	public final Pair<Integer, Integer> pair;

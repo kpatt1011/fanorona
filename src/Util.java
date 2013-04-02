@@ -1,3 +1,8 @@
+/*
+
+Authored By: Benjamin Martin
+
+*/
 public final class Util
 {
 

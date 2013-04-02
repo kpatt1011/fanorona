@@ -1,3 +1,8 @@
+/*
+
+Authored By: Benjamin Martin
+
+*/
 import java.lang.reflect.*;
 import java.util.*;
 
@@ -7,6 +12,24 @@ public final class Point
 
 	private State state;
 	private final Coordinate coordinate;
+
+	public Point(Coordinate coordinate)
+	{
+		this.coordinate = coordinate;
+		this.state = State.isEmpty;
+	}
+
+	public Point(Coordinate coordinate, State state)
+	{
+		this(coordinate);
+		this.state = state;
+	}
+
+	public Point(Point point)
+	{
+		this.coordinate = new Coordinate(point.coordinate);
+		this.state = point.state;
+	}
 
 	public boolean isOccupied()
 	{
@@ -28,24 +51,6 @@ public final class Point
 		return coordinate;
 	}
 
-	public Point(Coordinate coordinate)
-	{
-		this.coordinate = coordinate;
-		this.state = State.isEmpty;
-	}
-
-	public Point(Coordinate coordinate, State state)
-	{
-		this(coordinate);
-		this.state = state;
-	}
-
-	public Point(Point point)
-	{
-		this.coordinate = new Coordinate(point.coordinate);
-		this.state = point.state;
-	}
-
 	public boolean equals(Object that)
 	{
 		if ( this == that )
@@ -55,6 +60,7 @@ public final class Point
 		return this.state == ((Point) that).state;
 	}
 
+	//easily recognizable Unicode Shapes
 	public String toString()
 	{
 		switch(state)
@@ -67,14 +73,15 @@ public final class Point
 		}
 	}
 
-	public String toString(String w, String b, String s, String e)
+	//Text interchange character override
+	public String toString(String white, String black, String sacrifice, String empty)
 	{
 		switch(state)
 		{
-			case isOccupiedByBlack: 	return b;
-			case isOccupiedByWhite: 	return w;
-			case isOccupiedBySacrifice:	return s;
-			case isEmpty:           	return e;
+			case isOccupiedByBlack: 	return black;
+			case isOccupiedByWhite: 	return white;
+			case isOccupiedBySacrifice:	return sacrifice;
+			case isEmpty:           	return empty;
 			default:                	return "?";
 		}
 	}
