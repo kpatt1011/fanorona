@@ -15,7 +15,7 @@ class Gui extends JComponent {
 	
 		static Board board;
 		private BufferedImage image;
-		private  static FanoronaGameBoard gameBoard;
+		public  static FanoronaGameBoard gameBoard;
 		private static FanoronaGameBoard.Player firstPlayer;
 		private static FanoronaGameBoard.Player secondPlayer;
 		private final JFrame window;
@@ -117,27 +117,17 @@ class Gui extends JComponent {
 			FanoronaGameBoard board = new FanoronaGameBoard();
 			
 			Gui a = new Gui();
-			
-			
-			
-			
-			
-			
-				
-				
+
     }
     
     public void paintComponent(Graphics g) {
     	
-			board = new Board(g, gameBoard,pnlButton);
-      board.display_pieces(g);
+			board = new Board(g, gameBoard, pnlButton,this);
+      board.display_pieces();
 			
 			
 			drawScoreboard(g);
 			
-
-
-
     }
 		
 		// Draws start screen. With rules and instructions
