@@ -46,7 +46,7 @@ public class SocketMain {
 		   
 			messageStream.print("BEGIN");
 			messageStream.flush();
-			buffer = new byte[1024];
+			
 			/*send and receive messages over the socket until the game is over*/
 			while (!fg.isGameOver())
 			{
@@ -54,11 +54,16 @@ public class SocketMain {
 				 * run AI on fg board and then send the final move made as text across the 
 				 * 	socket to the client */
 				/*MAKE MOVE FROM THE CLIENT*/
-				
+				buffer = new byte[1024];
 				socketInput.read(buffer,0,1024);
 				clientResponse= new String(buffer);
-				System.out.println("client response: " + clientResponse);
+				System.out.println("client: " + clientResponse);
 				long elapsedTime =0;
+				if(clientResponse.startsWith("ILLEGAL"))
+				{
+					
+					break;
+				}
 				if(clientResponse.startsWith("OK"))
 				{
 					long timeBegin = System.currentTimeMillis();
@@ -79,7 +84,6 @@ public class SocketMain {
 					/*remove whitespace from command */
 					Coordinate start = new Coordinate(Character.getNumericValue(clientResponse.charAt(2)), Character.getNumericValue(clientResponse.charAt(4)) );
 					Coordinate end = new Coordinate(Character.getNumericValue(clientResponse.charAt(6)), Character.getNumericValue(clientResponse.charAt(8)) );
-					System.out.println(start.toString() + " " + end.toString());
 					FanoronaGameBoard.Move clientMove = fg.new Move(start,end);
 					if(clientMove.isValid())
 					{
@@ -106,7 +110,8 @@ public class SocketMain {
 					messageStream.flush();
 					} else {
 						messageStream.print("ILLEGAL\n");
-						messageStream.print("LOSER\n");
+						System.out.println(fg.toString());
+						messageStream.flush();
 						break;
 					}
 					
@@ -134,12 +139,12 @@ public class SocketMain {
 				moveString=moveString + serverMove.start.y.toString() + " ";
 				moveString=moveString + serverMove.end.x.toString() + " ";
 				moveString=moveString + serverMove.end.y.toString() + " ";
-				messageStream.flush();
 				messageStream.print(moveString);
 				messageStream.flush();
 			}
 
 			server.close();
+			System.out.println("GAME OVER\nWINNER: "+fg.getWinner().toString());
 			System.out.println("connection terminated");
 
 		} catch (IOException e) {
@@ -171,7 +176,7 @@ public class SocketMain {
 			socketInput.read(buffer,0,1024);
 			String serverResponse = new String(buffer);
 			 serverResponse.replaceAll("\n","");
-			System.out.println("serverResponse: "+serverResponse);
+			
 			/*ignore welcome statement from server */
 			if(serverResponse.contains("WELCOME")|| serverResponse.contains("welcome")){
 				socketInput.read(buffer,0,1024);
@@ -187,7 +192,7 @@ public class SocketMain {
 			{
 			  serverResponse=serverResponse.substring(5);
 			  serverResponse.replaceAll("\n","");
-			  System.out.println(serverResponse);
+			  //System.out.println(serverResponse);
 			  boardWidth = Integer.parseInt(serverResponse.substring(0,1));
 			  boardHeight = Integer.parseInt(serverResponse.substring(2,3));
 			
@@ -198,17 +203,17 @@ public class SocketMain {
 			FanoronaGameBoard fg = new FanoronaGameBoard(boardWidth, boardHeight);
 			messageStream.print("READY");
 			messageStream.flush();
-			  System.out.println("sent ready message to server");
-			  socketInput.read(buffer,0,1024);
-			  serverResponse=new String(buffer);
-			  System.out.println(serverResponse);
+			socketInput.read(buffer,0,1024);
+			serverResponse=new String(buffer);
+			
 			/*get move from the server, 
 			 * apply it to the board 
 			 * make move using AI
 			 * send move information to the server */
-			  buffer = new byte[1024];
+			  
 			while (!fg.isGameOver())
 			{
+				buffer = new byte[1024];
 				if(playerNumber.equals("F")|| playerNumber.equals("W"))
 				{
 					/*play game as if it is first person to move*/
@@ -230,7 +235,6 @@ public class SocketMain {
 					moveString=moveString + clientMove.start.y.toString() + " ";
 					moveString=moveString + clientMove.end.x.toString() + " ";
 					moveString=moveString + clientMove.end.y.toString() + " ";
-					System.out.println(moveString);
 					messageStream.print(moveString);
 					messageStream.flush();
 					
@@ -238,16 +242,16 @@ public class SocketMain {
 
 					socketInput.read(buffer,0,1024);
 					serverResponse= new String(buffer);
-					System.out.println("server response: " + serverResponse);
 					long elapsedTime =0;
 					/*measure time between 'OK' response from server and the move from the server*/
 					if(serverResponse.startsWith("OK"))
 					{
+						System.out.println("server: " + serverResponse);
 						long timeBegin = System.currentTimeMillis();
 						socketInput.read(buffer,0,1024);
 						elapsedTime = System.currentTimeMillis()-timeBegin;
 						serverResponse= new String(buffer);
-						System.out.println("server response: " + serverResponse);
+						System.out.println("server: " + serverResponse);
 						 
 					}
 					if(elapsedTime > timeLimit)
@@ -264,6 +268,7 @@ public class SocketMain {
 						Coordinate start = new Coordinate(Character.getNumericValue(serverResponse.charAt(2)), Character.getNumericValue(serverResponse.charAt(4)) );
 						Coordinate end = new Coordinate(Character.getNumericValue(serverResponse.charAt(6)), Character.getNumericValue(serverResponse.charAt(8)) );
 						FanoronaGameBoard.Move serverMove = fg.new Move(start,end);
+						System.out.println(serverMove.toString());
 						if(serverMove.isValid())
 						{
 						fg.move(serverMove);
@@ -289,7 +294,8 @@ public class SocketMain {
 						messageStream.flush();
 						} else {
 							messageStream.print("ILLEGAL\n");
-							messageStream.print("LOSER\n");
+							System.out.println(fg.toString());
+							messageStream.flush();
 							break;
 						}
 						
@@ -301,21 +307,23 @@ public class SocketMain {
 					/*get move from server and apply it to the board*/
 					socketInput.read(buffer,0,1024);
 					serverResponse= new String(buffer);
-					System.out.println("server response: " + serverResponse);
+					
 					long elapsedTime =0;
 					/*measure time between 'OK' response from server and the move from the server*/
 					if(serverResponse.equals("OK"))
 					{
+						System.out.println("server: " + serverResponse);
 						long timeBegin = System.currentTimeMillis();
 						socketInput.read(buffer,0,1024);
 						elapsedTime = System.currentTimeMillis()-timeBegin;
 						serverResponse= new String(buffer);
-						 
+						System.out.println("server: " + serverResponse); 
 					}
 					if(elapsedTime > timeLimit)
 					{
 						messageStream.print("TIME EXPIRED\n");
 						messageStream.print("LOSER\n");
+						messageStream.flush();
 						break;
 					}
 					if(serverResponse.startsWith("A") ||serverResponse.startsWith("S")|| serverResponse.startsWith("W") || serverResponse.startsWith("P"))
@@ -354,7 +362,8 @@ public class SocketMain {
 						messageStream.flush();
 						} else {
 							messageStream.print("ILLEGAL\n");
-							messageStream.print("LOSER\n");
+							System.out.println(fg.toString());
+							messageStream.flush();
 							break;
 						}
 					}
@@ -377,13 +386,12 @@ public class SocketMain {
 					moveString=moveString + clientMove.start.y.toString() + " ";
 					moveString=moveString + clientMove.end.x.toString() + " ";
 					moveString=moveString + clientMove.end.y.toString() + " ";
-					messageStream.print(moveString);
 					messageStream.flush();
 					
 				}
 				
 			}
-			
+			System.out.println("GAME OVER\nWINNER: "+fg.getWinner().toString());
 			gameSocket.close();
 			
 		}catch(UnknownHostException c){
