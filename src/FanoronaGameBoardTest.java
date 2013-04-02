@@ -293,7 +293,15 @@ public class FanoronaGameBoardTest {
 		FanoronaGameBoard.MoveResult result = FanoronaGameBoard.MoveResult.Success;
 		while (result == FanoronaGameBoard.MoveResult.Success)
 		{
-			MaxNode testRoot = new MaxNode (fgb);
+            MinimaxNode testRoot;
+            if (fgb.getCurrentPlayer() == FanoronaGameBoard.Player.Two)
+            {
+                testRoot = new MaxNode (fgb);
+            }
+            else
+            {
+                testRoot = new MinNode (fgb);
+            }
 			MinimaxTree testTree = new MinimaxTree (testRoot, depth);
 
 			result = printBoardMove(fgb, testTree.getIdealMove(), true);
