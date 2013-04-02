@@ -133,7 +133,7 @@ public class SocketMain {
 				moveString=moveString + serverMove.start.x.toString() + " ";
 				moveString=moveString + serverMove.start.y.toString() + " ";
 				moveString=moveString + serverMove.end.x.toString() + " ";
-				moveString=moveString + serverMove.end.x.toString() + " ";
+				moveString=moveString + serverMove.end.y.toString() + " ";
 				messageStream.print(moveString);
 				messageStream.flush();
 			}
@@ -224,7 +224,7 @@ public class SocketMain {
 					moveString=moveString + clientMove.start.x.toString() + " ";
 					moveString=moveString + clientMove.start.y.toString() + " ";
 					moveString=moveString + clientMove.end.x.toString() + " ";
-					moveString=moveString + clientMove.end.x.toString() + " ";
+					moveString=moveString + clientMove.end.y.toString() + " ";
 					messageStream.print(moveString);
 					messageStream.flush();
 					
@@ -372,7 +372,7 @@ public class SocketMain {
 					moveString=moveString + clientMove.start.x.toString() + " ";
 					moveString=moveString + clientMove.start.y.toString() + " ";
 					moveString=moveString + clientMove.end.x.toString() + " ";
-					moveString=moveString + clientMove.end.x.toString() + " ";
+					moveString=moveString + clientMove.end.y.toString() + " ";
 					messageStream.print(moveString);
 					messageStream.flush();
 					
