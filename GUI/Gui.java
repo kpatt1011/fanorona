@@ -18,30 +18,39 @@ class Gui extends JComponent {
 		private  static FanoronaGameBoard gameBoard;
 		private static FanoronaGameBoard.Player firstPlayer;
 		private static FanoronaGameBoard.Player secondPlayer;
+		private final JFrame window;
+		private JPanel pnlButton;
 		
-    public Gui(FanoronaGameBoard gb){
+    public Gui(){
 			
-			gameBoard = gb;
+			drawStartScreen();
+				
+			gameBoard = new FanoronaGameBoard();
 			firstPlayer = gameBoard.getCurrentPlayer();
 			secondPlayer = gameBoard.getWaitingPlayer();
-			drawStartScreen();
 			
-	
+			window = new JFrame();
+			pnlButton = new JPanel(); // JPanel containing the board
 			
-    }
-    
-
-    public static void main(String[] argS){
-    			
-			final JFrame window = new JFrame();
-			FanoronaGameBoard board = new FanoronaGameBoard();
+			window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			window.setSize(500, 500);
+			window.getContentPane().add(this);
+			window.setVisible(true);
 			
-			List<FanoronaGameBoard.Move> moves = board.getAllPossibleMoves();
-			
-			JPanel pnlButton = new JPanel(); // JPanel containing the board
-			
+			List<FanoronaGameBoard.Move> moves = gameBoard.getAllPossibleMoves();
 			
 			FanoronaGameBoard.Move capture_move = moves.get(1);
+			
+			
+			System.out.println(capture_move);
+			System.out.println(gameBoard.getNumberPiecesLeft(gameBoard.getWaitingPlayer()));
+			System.out.println(gameBoard.getNumberPiecesLeft(gameBoard.getCurrentPlayer()));
+		
+		 // FanoronaGameBoard.MoveResult a = gameBoard.movePiece(capture_move); // Execute first move
+			
+			System.out.println(gameBoard.getNumberPiecesLeft(gameBoard.getWaitingPlayer()));
+			System.out.println(gameBoard.getNumberPiecesLeft(gameBoard.getCurrentPlayer()));
+		
 			
 			// Loop to create a buttons for all the possible moves
 			for(int i = 0; i < moves.size(); i++ ) {
@@ -54,26 +63,11 @@ class Gui extends JComponent {
 					pnlButton.add(possibleMove);			  
 
 					if(moves.get(i).isCapture()) {
-						
 						capture_move = moves.get(i);
 					}
-			}
-			
-			System.out.println(capture_move);
-			System.out.println(board.getNumberPiecesLeft(board.getWaitingPlayer()));
-			System.out.println(board.getNumberPiecesLeft(board.getCurrentPlayer()));
-		
-		  FanoronaGameBoard.MoveResult a = board.movePiece(capture_move);
-			
-			System.out.println(board.getNumberPiecesLeft(board.getWaitingPlayer()));
-			System.out.println(board.getNumberPiecesLeft(board.getCurrentPlayer()));
-		
+			}			
 			
 			
-			window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-			window.setSize(500, 500);
-			window.getContentPane().add(new Gui(board));
-			window.setVisible(true);
     	
 			
 			JButton btnAddFlight = new JButton ("X");
@@ -111,21 +105,39 @@ class Gui extends JComponent {
       
 				
 			window.setVisible(true);
-			pnlButton.validate();
-			pnlButton.repaint();
-				
-				
-     
+
+			
+						
     }
     
-    public void paint(Graphics g) {
+
+    public static void main(String[] argS){
+    			
+			
+			FanoronaGameBoard board = new FanoronaGameBoard();
+			
+			Gui a = new Gui();
+			
+			
+			
+			
+			
+			
+				
+				
+    }
+    
+    public void paintComponent(Graphics g) {
     	
-			board = new Board(g, gameBoard);
+			board = new Board(g, gameBoard,pnlButton);
       board.display_pieces(g);
 			
 			
 			drawScoreboard(g);
-						
+			
+
+
+
     }
 		
 		// Draws start screen. With rules and instructions

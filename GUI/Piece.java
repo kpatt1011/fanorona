@@ -15,29 +15,28 @@ public class Piece {
 	int color; // 0 for Black piece, 1 for white piece
 	Graphics graph; // The graphics class the board is declared on
 	private BufferedImage image; // Image to represent the piece on the board
+	private JButton spaceButton;
 	
-	public Piece (int x, int y, int c, Graphics g) {
+	public Piece (int x, int y, int c, Graphics g, JButton butt) {
 		graph=g;
 		color=c;
 		x_location=x;
 		y_location=y;
+		spaceButton=butt;
 		
 		// Define which color image to use for the piece
 		if(color == 0) {
 				// Read in the proper image file
-			  try {                
-          image = ImageIO.read(new File("black.png")); 
-       } catch (IOException ex) {
-            // handle exception...
-       }
+
+					spaceButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("black.png")));
+
+      
 			}
 		
 		else {
-					  try {                
-          image = ImageIO.read(new File("white.png")); 
-       } catch (IOException ex) {
-            // handle exception...
-       }
+			    
+					spaceButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("white.png")));
+
 		}
 		
 	}
@@ -45,7 +44,7 @@ public class Piece {
 	// Display the board in the Graphics Graph
 	public void display() {
 		
-		graph.drawImage(image,x_location,y_location,null); // This should add a black
+		//graph.drawImage(image,x_location,y_location,null); // This should add a black
 		
 	}
 	

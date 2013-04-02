@@ -111,8 +111,7 @@ class FanoronaGameBoard
 					}
 				}
 				//The bottom rows are populated with white tokens
-				else
-				{
+				else{
 					gameBoard.get(i).add(new Point(new Coordinate(j,i), Point.State.isOccupiedByWhite));
 				}
 			}

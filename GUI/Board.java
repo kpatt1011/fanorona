@@ -1,6 +1,8 @@
 import java.awt.*;
 import java.util.*;
-
+import javax.swing.*;
+import java.awt.event.*;
+import java.awt.geom.*;
 
 // The GUI class for the representation of a board
 
@@ -11,14 +13,16 @@ public class Board {
 	ArrayList<Space> spaces; // All the spaces on the board
 	int remainingRed; 
 	int remainingBlack;
+	JPanel pnlButton;
 	FanoronaGameBoard gameBoard; // The FanoronaGameBoard class associated with the board
 
 	
 	// Constructs a new board with the starting piece layout
 	// Defines all the spaces on the board and puts the pieces in the proper spaces
-	 public Board(Graphics g, FanoronaGameBoard gb) {
+	 public Board(Graphics g, FanoronaGameBoard gb, JPanel pan) {
 		
-		gameBoard = gb;
+		 gameBoard = gb;
+		 pnlButton = pan;
      pieces = new ArrayList<Piece> (64);
      spaces = new ArrayList<Space> (64);
 		 
@@ -34,6 +38,11 @@ public class Board {
     		 
     		for(int j=0; j < 9; j++) {
     			
+					
+					
+				
+					
+					
     			// Draw lines connecting each space horizontally
     			if (j != 8) {
     				g.drawLine(x_location, y_location + 10 , x_location + 55 , y_location + 10);
@@ -89,23 +98,39 @@ public class Board {
 	 for(int i= 0; i < gameBoard.BOARD_LENGTH; i++  ) {
 				
 				for(int j = 0; j < gameBoard.BOARD_WIDTH; j++) {
-						Point temp = gameBoard.getPointAt(j,i); // Get the point at the give x (width) and y (length)
+						
+						// Add Jbutton to every space location, so the player can press them
+					JButton possibleMove = new JButton("");
+					possibleMove.setBounds((j * 50) + 15,(i * 50) + 40,30,30);
+					possibleMove.setBackground(Color.LIGHT_GRAY);
+					
+
+					possibleMove.addActionListener(new ActionListener() {          
+					public void actionPerformed(ActionEvent e) {
+									System.out.println("You pressed a possible move");
+							}
+					}); 
+					
+					
+						
+				
+				Point temp = gameBoard.getPointAt(j,i); // Get the point at the give x (width) and y (length)
 						
 						switch (temp.getState()) {
 							
 							case isOccupiedByBlack: 
-											Piece a = new Piece((j * 50) + 15, (i * 50) + 40 ,0,g);
-											a.display();
+											Piece a = new Piece((j * 50) + 15, (i * 50) + 40 ,0,g, possibleMove);
+										//	a.display();
 										break;
 										
 							case isOccupiedByWhite: 
-											Piece b = new Piece((j * 50) + 15, (i * 50) + 40 ,1,g);
-											b.display();
+											Piece b = new Piece((j * 50) + 15, (i * 50) + 40 ,1,g, possibleMove);
+										//	b.display();
 										break;
 											
 						}
 					
-						
+				pnlButton.add(possibleMove); // Add button to the panel	
 					
 						
 				}
