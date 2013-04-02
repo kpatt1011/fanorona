@@ -62,6 +62,10 @@ class MinNode implements MinimaxNode
             List<FanoronaGameBoard.Move> childMoves = gameBoard.getAllPossibleMoves();
             for (int i = 0; i < childMoves.size(); i++)
             {
+                if (childMoves.get(i).isSacrifice())
+                {
+                    continue;
+                }
                 FanoronaGameBoard childBoard = new FanoronaGameBoard(gameBoard);
                 childBoard.move(childMoves.get(i));
                 MaxNode childNode = new MaxNode(childBoard, depth-1, childMoves.get(i));
