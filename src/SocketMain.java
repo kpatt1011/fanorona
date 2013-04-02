@@ -27,6 +27,7 @@ public class SocketMain {
 			Socket s = server.accept();
 			InputStream socketInput = s.getInputStream();
 			OutputStream socketOutput = s.getOutputStream();
+			
 			PrintStream messageStream = new PrintStream(socketOutput);
 			/*send welcome message to the client 
 			 * default board dimensions will be used so default board
@@ -77,7 +78,7 @@ public class SocketMain {
 					/*remove whitespace from command */
 					char [] command = clientResponse.toCharArray();
 					String c= command.toString();
-					c.replaceAll("//s", "");
+					c.replaceAll("\\s", "");
 					command=c.toCharArray();
 					
 					Coordinate start = new Coordinate(Character.getNumericValue(command[1]), Character.getNumericValue(command[2]) );
@@ -117,7 +118,7 @@ public class SocketMain {
 				   * then:
 				   * print the move to the client across the socket
 				   * */
-				FanoronaGameBoard.Move serverMove = actualAI(fg,5);
+				FanoronaGameBoard.Move serverMove = actualAI(fg,2);
 				fg.move(serverMove);
 				/*generate string to send to client informing it of the move from the AI*/
 				String moveString="";
@@ -171,10 +172,13 @@ public class SocketMain {
 			/* get initial information from server */
 			socketInput.read(buffer,0,1024);
 			String serverResponse = new String(buffer);
+			 serverResponse.replaceAll("\n","");
+			System.out.println("serverResponse: "+serverResponse);
 			/*ignore welcome statement from server */
-			if(serverResponse.length()<9 &&serverResponse.contains("WELCOME")|| serverResponse.contains("welcome")){
+			if(serverResponse.contains("WELCOME")|| serverResponse.contains("welcome")){
 				socketInput.read(buffer,0,1024);
 				serverResponse = new String(buffer);
+				 serverResponse.replaceAll("\n","");
 			}
 			/*parse info statement and use it to set up game board */
 			long timeLimit =0;
@@ -183,12 +187,14 @@ public class SocketMain {
 			String playerNumber="";
 			if(serverResponse.startsWith("INFO") || serverResponse.startsWith("info"))
 			{
-			  serverResponse.replaceAll("//s","");
-			  serverResponse=serverResponse.substring(4);
+			  serverResponse=serverResponse.substring(5);
+			  serverResponse.replaceAll("\n","");
+			  System.out.println(serverResponse);
 			  boardWidth = Integer.parseInt(serverResponse.substring(0,1));
-			  boardHeight = Integer.parseInt(serverResponse.substring(1,2));
-			  playerNumber= serverResponse.substring(2,3);
-			  timeLimit = Integer.parseInt(serverResponse.substring(3));
+			  boardHeight = Integer.parseInt(serverResponse.substring(2,3));
+			  System.out.println("got board dims");
+			  playerNumber= serverResponse.substring(4,5);
+			  timeLimit = Integer.parseInt(serverResponse.substring(6,10));
 			  
 			}
 			FanoronaGameBoard fg = new FanoronaGameBoard(boardWidth, boardHeight);
@@ -204,7 +210,7 @@ public class SocketMain {
 				if(playerNumber.equals("F")|| playerNumber.equals("W"))
 				{
 					/*play game as if it is first person to move*/
-					FanoronaGameBoard.Move clientMove = actualAI(fg,5);
+					FanoronaGameBoard.Move clientMove = actualAI(fg,2);
 					fg.move(clientMove);
 					/*generate string to send to server informing it of the move from the AI*/
 					String moveString="";
@@ -250,7 +256,7 @@ public class SocketMain {
 						/*remove whitespace from command */
 						char [] command = serverResponse.toCharArray();
 						String c= command.toString();
-						c.replaceAll("//s", "");
+						c.replaceAll("\\s", "");
 						command=c.toCharArray();
 						
 						Coordinate start = new Coordinate(Character.getNumericValue(command[1]), Character.getNumericValue(command[2]) );
@@ -314,7 +320,7 @@ public class SocketMain {
 						/*remove whitespace from command */
 						char [] command = serverResponse.toCharArray();
 						String c= command.toString();
-						c.replaceAll("//s", "");
+						c.replaceAll("\\s", "");
 						command=c.toCharArray();
 						
 						Coordinate start = new Coordinate(Character.getNumericValue(command[1]), Character.getNumericValue(command[2]) );
@@ -350,7 +356,7 @@ public class SocketMain {
 						}
 					}
 					/*once server move is complete, make AI move*/
-					FanoronaGameBoard.Move clientMove = actualAI(fg,5);
+					FanoronaGameBoard.Move clientMove = actualAI(fg,2);
 					fg.move(clientMove);
 					/*generate string to send to server informing it of the move from the AI*/
 					String moveString="";
