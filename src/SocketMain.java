@@ -33,20 +33,18 @@ public class SocketMain {
 			 * default board dimensions will be used so default board
 			 * constructor is used for server model*/
 			FanoronaGameBoard fg = new FanoronaGameBoard();
-			messageStream.print("WELCOME\n");
-			messageStream.flush();
-			messageStream.print("INFO 9 5 F 5000\n");
+			messageStream.print("WELCOME");
+			//messageStream.flush();
+			messageStream.print("INFO 9 5 F 5000");
 			messageStream.flush();
 
 			/* convert read bytes into a string 
 			 * keep reading bytes from input stream until "READY" message is received*/
 			String clientResponse = new String(buffer);
-			while(!clientResponse.equals("READY")||!clientResponse.equals("ready"))
-			{
 				socketInput.read(buffer,0,6);
 				clientResponse = new String(buffer);
-			}
-			messageStream.print("BEGIN\n");
+		   
+			messageStream.print("BEGIN");
 			messageStream.flush();
 			/*send and receive messages over the socket until the game is over*/
 			while (!fg.isGameOver())
@@ -57,8 +55,9 @@ public class SocketMain {
 				/*MAKE MOVE FROM THE CLIENT*/
 				socketInput.read(buffer,0,1024);
 				clientResponse= new String(buffer);
+				System.out.println("client response: " + clientResponse);
 				long elapsedTime =0;
-				if(clientResponse.equals("OK"))
+				if(clientResponse.startsWith("OK"))
 				{
 					long timeBegin = System.currentTimeMillis();
 					socketInput.read(buffer,0,1024);
@@ -76,13 +75,11 @@ public class SocketMain {
 				if(clientResponse.startsWith("A") || clientResponse.startsWith("W") || clientResponse.startsWith("S") || clientResponse.startsWith("P"))
 				{
 					/*remove whitespace from command */
-					char [] command = clientResponse.toCharArray();
-					String c= command.toString();
-					c.replaceAll("\\s", "");
-					command=c.toCharArray();
-					
-					Coordinate start = new Coordinate(Character.getNumericValue(command[1]), Character.getNumericValue(command[2]) );
-					Coordinate end = new Coordinate(Character.getNumericValue(command[3]), Character.getNumericValue(command[4]) );
+
+					System.out.println(clientResponse);
+					Coordinate start = new Coordinate(Character.getNumericValue(clientResponse.charAt(2)), Character.getNumericValue(clientResponse.charAt(4)) );
+					Coordinate end = new Coordinate(Character.getNumericValue(clientResponse.charAt(6)), Character.getNumericValue(clientResponse.charAt(8)) );
+					System.out.println(start.toString() + " " + end.toString());
 					FanoronaGameBoard.Move clientMove = fg.new Move(start,end);
 					if(clientMove.isValid())
 					{
@@ -90,12 +87,12 @@ public class SocketMain {
 					/*make successive capture moves designated by the client*/
 					if(clientMove.isCapture())
 					{
-						for(int i=4;i<command.length;i++)
+						for(int i=4;i<clientResponse.length();i++)
 						{
-							if(command[i]=='+')
+							if(clientResponse.charAt(i)=='+')
 							{
-							 start = new Coordinate(Character.getNumericValue(command[i+2]), Character.getNumericValue(command[i+3]) );
-						     end = new Coordinate(Character.getNumericValue(command[i+4]), Character.getNumericValue(command[i+5]) );
+							 start = new Coordinate(Character.getNumericValue(clientResponse.charAt(i+2)), Character.getNumericValue(clientResponse.charAt(i+4))) ;
+						     end = new Coordinate(Character.getNumericValue(clientResponse.charAt(i+6)), Character.getNumericValue(clientResponse.charAt(i+8)) );
 							 clientMove = fg.new Move(start,end);
 							 if(clientMove.isValid())
 								{
@@ -192,15 +189,15 @@ public class SocketMain {
 			  System.out.println(serverResponse);
 			  boardWidth = Integer.parseInt(serverResponse.substring(0,1));
 			  boardHeight = Integer.parseInt(serverResponse.substring(2,3));
-			  System.out.println("got board dims");
+			
 			  playerNumber= serverResponse.substring(4,5);
 			  timeLimit = Integer.parseInt(serverResponse.substring(6,10));
 			  
 			}
 			FanoronaGameBoard fg = new FanoronaGameBoard(boardWidth, boardHeight);
-			messageStream.print("READY\n");
+			messageStream.print("READY");
 			messageStream.flush();
-			
+			  System.out.println("sent ready message to server");
 			/*get move from the server, 
 			 * apply it to the board 
 			 * make move using AI
@@ -235,9 +232,10 @@ public class SocketMain {
 
 					socketInput.read(buffer,0,1024);
 					serverResponse= new String(buffer);
+					System.out.println("server response: " + serverResponse);
 					long elapsedTime =0;
 					/*measure time between 'OK' response from server and the move from the server*/
-					if(serverResponse.equals("OK"))
+					if(serverResponse.startsWith("OK"))
 					{
 						long timeBegin = System.currentTimeMillis();
 						socketInput.read(buffer,0,1024);
@@ -259,8 +257,8 @@ public class SocketMain {
 						c.replaceAll("\\s", "");
 						command=c.toCharArray();
 						
-						Coordinate start = new Coordinate(Character.getNumericValue(command[1]), Character.getNumericValue(command[2]) );
-						Coordinate end = new Coordinate(Character.getNumericValue(command[3]), Character.getNumericValue(command[4]) );
+						Coordinate start = new Coordinate(Character.getNumericValue(command[2]), Character.getNumericValue(command[4]) );
+						Coordinate end = new Coordinate(Character.getNumericValue(command[6]), Character.getNumericValue(command[8]) );
 						FanoronaGameBoard.Move serverMove = fg.new Move(start,end);
 						if(serverMove.isValid())
 						{
@@ -299,6 +297,7 @@ public class SocketMain {
 					/*get move from server and apply it to the board*/
 					socketInput.read(buffer,0,1024);
 					serverResponse= new String(buffer);
+					System.out.println("server response: " + serverResponse);
 					long elapsedTime =0;
 					/*measure time between 'OK' response from server and the move from the server*/
 					if(serverResponse.equals("OK"))
@@ -323,8 +322,8 @@ public class SocketMain {
 						c.replaceAll("\\s", "");
 						command=c.toCharArray();
 						
-						Coordinate start = new Coordinate(Character.getNumericValue(command[1]), Character.getNumericValue(command[2]) );
-						Coordinate end = new Coordinate(Character.getNumericValue(command[3]), Character.getNumericValue(command[4]) );
+						Coordinate start = new Coordinate(Character.getNumericValue(command[2]), Character.getNumericValue(command[4]));
+						Coordinate end = new Coordinate(Character.getNumericValue(command[6]), Character.getNumericValue(command[8]) );
 						FanoronaGameBoard.Move serverMove = fg.new Move(start,end);
 						if(serverMove.isValid())
 						{
