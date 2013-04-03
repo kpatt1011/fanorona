@@ -87,7 +87,6 @@ public class SocketMain {
 					if(clientMove.isValid())
 					{
 					fg.move(clientMove);
-					System.out.println(fg.getCurrentPlayer().toString());
 					/*make successive capture moves designated by the client*/
 					if(clientMove.isCapture())
 					{
@@ -120,8 +119,7 @@ public class SocketMain {
 				   * print the move to the client across the socket
 				   * */
 				FanoronaGameBoard.Move serverMove = actualAI(fg,1);
-				System.out.println("My pieces remaining: "+fg.getNumberPiecesLeft(fg.getCurrentPlayer()));
-				System.out.println("My move: "+serverMove.toString());
+				System.out.println("my move: "+serverMove.toString());
 				fg.move(serverMove);
 						/*generate string to send to client informing it of the move from the AI*/
 						String moveString="";
@@ -144,7 +142,7 @@ public class SocketMain {
 						messageStream.flush();
 				    	
 				   
-				System.out.println(fg.toString("w", "b", "s", "e"));
+				System.out.println(fg.toString("W", "B", "S", " "));
 			}
 
 			server.close();
@@ -214,17 +212,107 @@ public class SocketMain {
 			 * apply it to the board 
 			 * make move using AI
 			 * send move information to the server */
-		 
+		    boolean notFirstTurn=false;
+		    
 			while (!fg.isGameOver())
 			{
 				buffer = new byte[1024];
 				if(playerNumber.equals("F")|| playerNumber.equals("W"))
 				{
 					/*play game as if it is first person to move*/
+					if(notFirstTurn)
+					{
+						/*make move from server, then apply client move
+						 * 
+						 * 
+						 * */
+						socketInput.read(buffer,0,1024);
+						serverResponse= new String(buffer);
+						long elapsedTime =0;
+						/*measure time between 'OK' response from server and the move from the server*/
+						if(serverResponse.startsWith("OK"))
+						{
+							long timeBegin = System.currentTimeMillis();
+							socketInput.read(buffer,0,1024);
+							elapsedTime = System.currentTimeMillis()-timeBegin;
+							serverResponse= new String(buffer);
+							if(elapsedTime > timeLimit)
+							{
+								messageStream.print("TIME EXPIRED\n");
+								messageStream.print("LOSER\n");
+								break;
+							}
+							 
+						}
+						
+						if(serverResponse.startsWith("A") || serverResponse.startsWith("W") || serverResponse.startsWith("S") || serverResponse.startsWith("P"))
+						{
+							/*remove whitespace from command */
+							Coordinate start = new Coordinate(Character.getNumericValue(serverResponse.charAt(2)), Character.getNumericValue(serverResponse.charAt(4)) );
+							Coordinate end = new Coordinate(Character.getNumericValue(serverResponse.charAt(6)), Character.getNumericValue(serverResponse.charAt(8)) );
+							FanoronaGameBoard.Move serverMove = fg.new Move(start,end);
+							System.out.println("Opponent Move: "+serverMove.toString());
+							if(serverMove.isValid())
+							{
+							fg.move(serverMove);
+							/*make successive capture moves designated by the server*/
+							if(serverMove.isCapture())
+							{
+								for(int i=4;i<serverResponse.length();i++)
+								{
+									if(serverResponse.charAt(i)=='+')
+									{
+									 start = new Coordinate(Character.getNumericValue(serverResponse.charAt(i+2)), Character.getNumericValue(serverResponse.charAt(i+4)) );
+								     end = new Coordinate(Character.getNumericValue(serverResponse.charAt(i+6)), Character.getNumericValue(serverResponse.charAt(i+8)) );
+								     serverMove = fg.new Move(start,end);
+									 if(serverMove.isValid())
+										{
+										 fg.move(serverMove);
+										}
+									 
+									}
+								}
+							}
+							messageStream.print("OK\n");
+							messageStream.flush();
+							} else {
+								messageStream.print("ILLEGAL\n");
+							
+								messageStream.flush();
+								break;
+							}
+							
+						}
+						/*
+						 * make client move afterwards
+						 * 
+						 * */
+						FanoronaGameBoard.Move clientMove = actualAI(fg,1);
+							  System.out.println("My move: "+clientMove.toString());
+								fg.move(clientMove);
+								/*generate string to send to client informing it of the move from the AI*/
+								String moveString="";
+								if(clientMove.isApproach())
+								{
+									moveString=moveString + "A ";
+								} else if(clientMove.isWithdraw()){
+									moveString=moveString + "W ";				
+								} else if (clientMove.isPaika()) {
+									moveString=moveString + "P ";
+								} else if(clientMove.isSacrifice()){
+									moveString=moveString + "S ";
+								}
+				               
+								moveString=moveString + clientMove.start.x.toString() + " ";
+								moveString=moveString + clientMove.start.y.toString() + " ";
+								moveString=moveString + clientMove.end.x.toString() + " ";
+								moveString=moveString + clientMove.end.y.toString() + " ";
+								messageStream.print(moveString);
+								messageStream.flush();
+						    	notFirstTurn=true;
+						
+					} else{
 					FanoronaGameBoard.Move clientMove = actualAI(fg,1);
-					System.out.println(fg.getNumberPiecesLeft(fg.getWaitingPlayer()) +" opponents pieces remaining ");
-					System.out.println(fg.getNumberPiecesLeft(fg.getCurrentPlayer())+" my pieces remaining ");
-					//System.out.println(fg.getCurrentPlayer().toString());
 						  System.out.println("My move: "+clientMove.toString());
 							fg.move(clientMove);
 							/*generate string to send to client informing it of the move from the AI*/
@@ -271,8 +359,6 @@ public class SocketMain {
 					if(serverResponse.startsWith("A") || serverResponse.startsWith("W") || serverResponse.startsWith("S") || serverResponse.startsWith("P"))
 					{
 						/*remove whitespace from command */
-					
-						
 						Coordinate start = new Coordinate(Character.getNumericValue(serverResponse.charAt(2)), Character.getNumericValue(serverResponse.charAt(4)) );
 						Coordinate end = new Coordinate(Character.getNumericValue(serverResponse.charAt(6)), Character.getNumericValue(serverResponse.charAt(8)) );
 						FanoronaGameBoard.Move serverMove = fg.new Move(start,end);
@@ -300,6 +386,7 @@ public class SocketMain {
 						}
 						messageStream.print("OK\n");
 						messageStream.flush();
+						}
 						} else {
 							messageStream.print("ILLEGAL\n");
 						
@@ -398,7 +485,7 @@ public class SocketMain {
 						messageStream.print(moveString);
 						messageStream.flush();
 				}
-				System.out.println(fg.toString("w", "b", "s", "e"));
+				System.out.println(fg.toString("W", "B", "S", " "));
 			}
 			System.out.println("GAME OVER\nWINNER: "+fg.getWinner().toString());
 			
