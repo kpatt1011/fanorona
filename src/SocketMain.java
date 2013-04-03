@@ -2,7 +2,6 @@
 
 
 import java.net.*;
-import java.net.Socket;
 import java.io.*;
 
 
@@ -503,17 +502,21 @@ public class SocketMain {
 	}
 	public static FanoronaGameBoard.Move actualAI(FanoronaGameBoard fgb, int depth)
 	{
-		
-			MaxNode testRoot = new MaxNode (fgb);
+		MinimaxNode testRoot;
+
+            if (fgb.getCurrentPlayer() == FanoronaGameBoard.Player.Two)
+            {
+                testRoot = new MaxNode (fgb);
+            }
+            else
+            {
+                testRoot = new MinNode (fgb);
+            }
 			MinimaxTree testTree = new MinimaxTree (testRoot, depth);
-			if(testTree.getIdealMove().isValid())
-			{
-            return testTree.getIdealMove();
-			} else{
-				testRoot = new MaxNode (fgb);
-				testTree= new MinimaxTree (testRoot,1);
-				return testTree.getIdealMove();
-			}
+
+			
+		
+		return testTree.getIdealMove();
 	}
 	
 
