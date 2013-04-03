@@ -27,6 +27,22 @@ public final class Coordinate
 		this(coord.x, coord.y);
 	}
 
+	public Coordinate(String s)
+	{
+		String[] numbers = new String[2];
+		int middle = s.indexOf(',');
+
+		numbers[0] = s.substring(1, middle);
+		numbers[1] = s.substring(middle + 1, s.length() - 1);
+
+		Integer X = Integer.parseInt(numbers[0]);
+		Integer Y = Integer.parseInt(numbers[1]);
+
+		this.pair = new Pair<Integer, Integer>(X.intValue(), Y.intValue());
+		this.x = X.intValue();
+		this.y = Y.intValue();
+	}
+
 	public boolean equals(Coordinate other)
 	{
 		return pair.equals(other.pair);

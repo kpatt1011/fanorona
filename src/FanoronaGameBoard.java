@@ -171,10 +171,10 @@ class FanoronaGameBoard
 			state = Point.State.isOccupiedByBlack;
 
 		int total = 0;
-		for ( int i = 0; i < BOARD_WIDTH; i++)
-			for ( int j = 0; j < BOARD_LENGTH; j++)
-				if(getPointAt(i,j).getState() == state)
-					total++;
+		for ( List<Point> row : gameBoard)
+			for ( Point point : row)
+				if(point.getState() == state)
+					total += 1;
 
 		return total;
 	}
