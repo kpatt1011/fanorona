@@ -15,7 +15,7 @@ class Gui extends JComponent {
 	
 		static Board board;
 		private BufferedImage image;
-		public  static FanoronaGameBoard gameBoard;
+		public static FanoronaGameBoard gameBoard;
 		private static FanoronaGameBoard.Player firstPlayer;
 		private static FanoronaGameBoard.Player secondPlayer;
 		private final JFrame window;
@@ -24,6 +24,8 @@ class Gui extends JComponent {
     public Gui(){
 			
 			drawStartScreen();
+			
+		
 				
 			gameBoard = new FanoronaGameBoard();
 			firstPlayer = gameBoard.getCurrentPlayer();
@@ -46,28 +48,11 @@ class Gui extends JComponent {
 			System.out.println(gameBoard.getNumberPiecesLeft(gameBoard.getWaitingPlayer()));
 			System.out.println(gameBoard.getNumberPiecesLeft(gameBoard.getCurrentPlayer()));
 		
-		 // FanoronaGameBoard.MoveResult a = gameBoard.movePiece(capture_move); // Execute first move
+
 			
 			System.out.println(gameBoard.getNumberPiecesLeft(gameBoard.getWaitingPlayer()));
 			System.out.println(gameBoard.getNumberPiecesLeft(gameBoard.getCurrentPlayer()));
 		
-			
-			// Loop to create a buttons for all the possible moves
-			for(int i = 0; i < moves.size(); i++ ) {
-					
-					int x = ((moves.get(i).end.x) * 50) + 15;
-					int y = ((moves.get(i).end.y) * 50) + 40;
-					
-					JButton possibleMove = new JButton("");
-					possibleMove.setBounds(x,y,20,20);
-					pnlButton.add(possibleMove);			  
-
-					if(moves.get(i).isCapture()) {
-						capture_move = moves.get(i);
-					}
-			}			
-			
-			
     	
 			
 			JButton btnAddFlight = new JButton ("X");
@@ -100,30 +85,28 @@ class Gui extends JComponent {
 			
 			
       window.setSize(500, 500);
-
-			
-      
-				
+	
 			window.setVisible(true);
-
 			
-						
     }
     
-
     public static void main(String[] argS){
     			
 			
 			FanoronaGameBoard board = new FanoronaGameBoard();
 			
 			Gui a = new Gui();
-
+			
+			
     }
     
     public void paintComponent(Graphics g) {
     	
-			board = new Board(g, gameBoard, pnlButton,this);
-      board.display_pieces();
+			board = new Board(gameBoard, pnlButton,this);
+			
+			board.draw_board(g);
+      
+			board.display_pieces(g, gameBoard);
 			
 			
 			drawScoreboard(g);
@@ -133,14 +116,14 @@ class Gui extends JComponent {
 		// Draws start screen. With rules and instructions
 		public static void drawStartScreen() {
 		
-			JOptionPane pane = new JOptionPane();
+			  JOptionPane pane = new JOptionPane();
 				JDialog dialog = pane.createDialog( "Start Screen");
 				pane.setMessage("Welcome to Fanorona!");
 				
 				
 				dialog.show();
 				
-			}
+		}
 		
 		
 		public static void drawScoreboard (Graphics g) {
@@ -164,5 +147,5 @@ class Gui extends JComponent {
 			g.drawString(numBlack,100,400);
 		}
 		
-    }
+}
     

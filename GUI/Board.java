@@ -14,26 +14,32 @@ public class Board {
 	ArrayList<Space> spaces; // All the spaces on the board
 	int remainingRed; 
 	int remainingBlack;
-	private JPanel pnlButton;
+	public JPanel pnlButton;
 	public FanoronaGameBoard gameBoard; // The FanoronaGameBoard class associated with the board
-	public Graphics g;
+	
 	private List<FanoronaGameBoard.Move> moves;
 	public Gui passedGui; // The gui object passed from the Gui class
 	
 	// Constructs a new board with the starting piece layout
 	// Defines all the spaces on the board and puts the pieces in the proper spaces
-	 public Board(Graphics g, FanoronaGameBoard gb, JPanel pan, Gui gu) {
+	 public Board(FanoronaGameBoard gb, JPanel pan, Gui gu) {
 		
-		 gameBoard = gb;
 		 pnlButton = pan;
      pieces = new ArrayList<Piece> (64);
      spaces = new ArrayList<Space> (64);
 		 passedGui = gu;
-		 
+		
 		 remainingRed=23; // Red pieces left on the board
 		 remainingBlack=23; // Black Pieces left on the board
-	   int x_location = 50; // Top left corner of the board, x
-     int y_location = 50; // Top left corner of the board, y
+	  
+			
+				
+     }// End of board constructor 
+	 
+	 
+	 public void draw_board(Graphics g) {
+			 int x_location = 50; // Top left corner of the board, x
+			 int y_location = 50; // Top left corner of the board, y
     	
     	for(int i=0; i < 5; i++) {
     		
@@ -89,39 +95,40 @@ public class Board {
     		
     	} // End of i for loop
     	
-		
-				
-     }// End of board constructor 
+	 }
 	 
-	 void display_pieces() {
+	 public void display_pieces(final Graphics g, final FanoronaGameBoard gb) {
 	 
-		moves = gameBoard.getAllPossibleMoves(); // Put all the posible moves for the player into a list
+		moves = gb.getAllPossibleMoves(); // Put all the posible moves for the player into a list
 	 
 			
 	 
 	 // Draw the pieces on the board.
-	 for(int i= 0; i < gameBoard.BOARD_LENGTH; i++  ) {
+	 for(int i= 0; i < gb.BOARD_LENGTH; i++  ) {
 				
-				for(int j = 0; j < gameBoard.BOARD_WIDTH; j++) {
+				for(int j = 0; j < gb.BOARD_WIDTH; j++) {
 						
 						// Add Jbutton to every space location, so the player can press them
 					
 		
-				Point temp = gameBoard.getPointAt(j,i); // Get the point at the give x (width) and y (length)
+				Point temp = gb.getPointAt(j,i); // Get the point at the give x (width) and y (length)
 						
 						final GuiSpace spaceButton;
 						switch (temp.getState()) {
 							
 							case isOccupiedByBlack: 
+											System.out.println("Printed a Black");
 											spaceButton = new GuiSpace((j * 50) + 15, (i * 50) + 40 ,0,g);
 											pnlButton.add(spaceButton); // Add button to the panel
 										break;
 										
 							case isOccupiedByWhite: 
+											System.out.println("Printed a White");
 											spaceButton = new GuiSpace((j * 50) + 15, (i * 50) + 40 ,1,g);
 											pnlButton.add(spaceButton); // Add button to the panel
 										break;
 							default: 
+											System.out.println("Printed a silly space");
 											spaceButton = new GuiSpace((j * 50) + 15, (i * 50) + 40 ,2,g);
 											pnlButton.add(spaceButton); // Add button to the panel
 										break;
@@ -140,8 +147,8 @@ public class Board {
 												// If move exists in list of possible moves then exectute it
 												if (( spaceButton.x_location == ((moves.get(i).end.x) * 50) + 15) && ( spaceButton.y_location == ((moves.get(i).end.y) * 50) + 40)) {
 														System.out.println(moves.get(i));
-														gameBoard.move(moves.get(i)); // Execute move on gameBoard
-														display_pieces();
+														gb.move(moves.get(i)); // Execute move on gameBoard
+														//display_pieces(g,gb);
 														passedGui.repaint();
 														
 														break;
@@ -161,21 +168,7 @@ public class Board {
 	 }
 	 
 		 
-		// Display Pieces on board in starting arrangment
-    	 for(int i= 0; i < spaces.size(); i++) {
-    		 int x = spaces.get(i).get_x();
-    		 int y= spaces.get(i).get_y();
-    		 
-    		 if(i <= 18 || i == 20 || i== 23 || i ==25) {
-    			
-         		
-    		 }
-    		 
-    		 if(i == 17 || i == 19 || i == 21 || i >= 24) {
-    		
-          	
-    		 }
-    	 }
+	
 	 }
 		
 		// Returns the number of pieces remaining for a given color. 0 for black, 1 for red, returns -1 if there is an error
