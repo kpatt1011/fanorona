@@ -79,10 +79,10 @@ public class SocketMain {
 				if(clientResponse.startsWith("A") || clientResponse.startsWith("W") || clientResponse.startsWith("S") || clientResponse.startsWith("P"))
 				{
 					/*remove whitespace from command */
-					System.out.println(clientResponse);
+					//System.out.println(clientResponse);
 					Coordinate start = new Coordinate(Character.getNumericValue(clientResponse.charAt(2))-1, Character.getNumericValue(clientResponse.charAt(4))-1 );
 					Coordinate end = new Coordinate(Character.getNumericValue(clientResponse.charAt(6))-1, Character.getNumericValue(clientResponse.charAt(8))-1);
-					System.out.println(start.toString()+" "+end.toString());
+					//System.out.println(start.toString()+" "+end.toString());
 					FanoronaGameBoard.Move clientMove = fg.new Move(start,end);
 					System.out.println("Opponent move: "+clientMove.toString());
 					if(clientMove.isValid())
