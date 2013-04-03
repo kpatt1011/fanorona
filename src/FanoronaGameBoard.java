@@ -622,6 +622,17 @@ class FanoronaGameBoard
 		return string;
 	}
 
+	public String toString(String black, String white, String Sacrifice, String Empty)
+	{
+		String string = toString();
+
+		string.replaceAll("●",black);
+		string.replaceAll("○",white);
+		string.replaceAll("▫",empty);
+
+		return string;
+	}
+
 	public String typeToString(Type type)
 	{
 		switch (type)
