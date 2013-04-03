@@ -118,28 +118,56 @@ public class SocketMain {
 				   * then:
 				   * print the move to the client across the socket
 				   * */
-				FanoronaGameBoard.Move serverMove = actualAI(fg,1);
-				System.out.println("My move: "+serverMove.toString());
-				fg.move(serverMove);
-				/*generate string to send to client informing it of the move from the AI*/
-				String moveString="";
-				if(serverMove.isApproach())
-				{
-					moveString=moveString + "A ";
-				} else if(serverMove.isWithdraw()){
-					moveString=moveString + "W ";				
-				} else if (serverMove.isPaika()) {
-					moveString=moveString + "P ";
-				} else if(serverMove.isSacrifice()){
-					moveString=moveString + "S ";
-				}
-               
-				moveString=moveString + serverMove.start.x.toString() + " ";
-				moveString=moveString + serverMove.start.y.toString() + " ";
-				moveString=moveString + serverMove.end.x.toString() + " ";
-				moveString=moveString + serverMove.end.y.toString() + " ";
-				messageStream.print(moveString);
-				messageStream.flush();
+				FanoronaGameBoard.Move serverMove = actualAI(fg,2);
+				  if(serverMove.isValid())
+				    {
+					  System.out.println("My move: "+serverMove.toString());
+						fg.move(serverMove);
+						/*generate string to send to client informing it of the move from the AI*/
+						String moveString="";
+						if(serverMove.isApproach())
+						{
+							moveString=moveString + "A ";
+						} else if(serverMove.isWithdraw()){
+							moveString=moveString + "W ";				
+						} else if (serverMove.isPaika()) {
+							moveString=moveString + "P ";
+						} else if(serverMove.isSacrifice()){
+							moveString=moveString + "S ";
+						}
+		               
+						moveString=moveString + serverMove.start.x.toString() + " ";
+						moveString=moveString + serverMove.start.y.toString() + " ";
+						moveString=moveString + serverMove.end.x.toString() + " ";
+						moveString=moveString + serverMove.end.y.toString() + " ";
+						messageStream.print(moveString);
+						messageStream.flush();
+				    	
+				    } else {
+				    	FanoronaGameBoard.Move altMove = actualAI(fg, 1);
+				    	System.out.println("My move: "+altMove.toString());
+						fg.move(altMove);
+						/*generate string to send to client informing it of the move from the AI*/
+						String moveString="";
+						if(altMove.isApproach())
+						{
+							moveString=moveString + "A ";
+						} else if(altMove.isWithdraw()){
+							moveString=moveString + "W ";				
+						} else if (altMove.isPaika()) {
+							moveString=moveString + "P ";
+						} else if(altMove.isSacrifice()){
+							moveString=moveString + "S ";
+						}
+		               
+						moveString=moveString + altMove.start.x.toString() + " ";
+						moveString=moveString + altMove.start.y.toString() + " ";
+						moveString=moveString + altMove.end.x.toString() + " ";
+						moveString=moveString + altMove.end.y.toString() + " ";
+						messageStream.print(moveString);
+						messageStream.flush();
+				    }
+				
 			}
 
 			server.close();
@@ -204,43 +232,67 @@ public class SocketMain {
 			messageStream.flush();
 			socketInput.read(buffer,0,1024);
 			serverResponse=new String(buffer);
-			
+		
 			/*get move from the server, 
 			 * apply it to the board 
 			 * make move using AI
 			 * send move information to the server */
-			  
+		 
 			while (!fg.isGameOver())
 			{
 				buffer = new byte[1024];
 				if(playerNumber.equals("F")|| playerNumber.equals("W"))
 				{
-					if(serverResponse.startsWith("ILLEGAL"))
-					{
-						break;
-					}
 					/*play game as if it is first person to move*/
-					FanoronaGameBoard.Move clientMove = actualAI(fg,1);
-					System.out.println("My move: " + clientMove.toString());
-					fg.move(clientMove);
-					/*generate string to send to server informing it of the move from the AI*/
-					String moveString="";
-					if(clientMove.isApproach())
-					{
-						moveString=moveString + "A ";
-					} else if(clientMove.isWithdraw()){
-						moveString=moveString + "W ";				
-					} else if (clientMove.isPaika()) {
-						moveString=moveString + "P ";
-					} else if (clientMove.isSacrifice()){
-						moveString=moveString + "S ";
-					}
-					moveString=moveString + clientMove.start.x.toString() + " ";
-					moveString=moveString + clientMove.start.y.toString() + " ";
-					moveString=moveString + clientMove.end.x.toString() + " ";
-					moveString=moveString + clientMove.end.y.toString() + " ";
-					messageStream.print(moveString);
-					messageStream.flush();
+					FanoronaGameBoard.Move clientMove = actualAI(fg,2);
+					 if(clientMove.isValid())
+					    {
+						  System.out.println("My move: "+clientMove.toString());
+							fg.move(clientMove);
+							/*generate string to send to client informing it of the move from the AI*/
+							String moveString="";
+							if(clientMove.isApproach())
+							{
+								moveString=moveString + "A ";
+							} else if(clientMove.isWithdraw()){
+								moveString=moveString + "W ";				
+							} else if (clientMove.isPaika()) {
+								moveString=moveString + "P ";
+							} else if(clientMove.isSacrifice()){
+								moveString=moveString + "S ";
+							}
+			               
+							moveString=moveString + clientMove.start.x.toString() + " ";
+							moveString=moveString + clientMove.start.y.toString() + " ";
+							moveString=moveString + clientMove.end.x.toString() + " ";
+							moveString=moveString + clientMove.end.y.toString() + " ";
+							messageStream.print(moveString);
+							messageStream.flush();
+					    	
+					    } else {
+					    	FanoronaGameBoard.Move altMove = actualAI(fg, 1);
+					    	System.out.println("My move: "+altMove.toString());
+							fg.move(altMove);
+							/*generate string to send to client informing it of the move from the AI*/
+							String moveString="";
+							if(altMove.isApproach())
+							{
+								moveString=moveString + "A ";
+							} else if(altMove.isWithdraw()){
+								moveString=moveString + "W ";				
+							} else if (altMove.isPaika()) {
+								moveString=moveString + "P ";
+							} else if(altMove.isSacrifice()){
+								moveString=moveString + "S ";
+							}
+			               
+							moveString=moveString + altMove.start.x.toString() + " ";
+							moveString=moveString + altMove.start.y.toString() + " ";
+							moveString=moveString + altMove.end.x.toString() + " ";
+							moveString=moveString + altMove.end.y.toString() + " ";
+							messageStream.print(moveString);
+							messageStream.flush();
+					    }
 					
 					/*get move from server and apply it to the board*/
 
@@ -366,31 +418,60 @@ public class SocketMain {
 						}
 					}
 					/*once server move is complete, make AI move*/
-					FanoronaGameBoard.Move clientMove = actualAI(fg,1);
-					System.out.println("My move: "+clientMove.toString());
-					fg.move(clientMove);
-					/*generate string to send to server informing it of the move from the AI*/
-					String moveString="";
-					if(clientMove.isApproach())
-					{
-						moveString=moveString + "A ";
-					} else if(clientMove.isWithdraw()){
-						moveString=moveString + "W ";				
-					} else if (clientMove.isPaika()) {
-						moveString=moveString + "P ";
-					} else if(clientMove.isSacrifice()){
-						moveString=moveString + "S ";
-					}
-					moveString=moveString + clientMove.start.x.toString() + " ";
-					moveString=moveString + clientMove.start.y.toString() + " ";
-					moveString=moveString + clientMove.end.x.toString() + " ";
-					moveString=moveString + clientMove.end.y.toString() + " ";
-					messageStream.flush();
-					
+					FanoronaGameBoard.Move clientMove = actualAI(fg,2);
+					if(clientMove.isValid())
+				    {
+					  System.out.println("My move: "+clientMove.toString());
+						fg.move(clientMove);
+						/*generate string to send to client informing it of the move from the AI*/
+						String moveString="";
+						if(clientMove.isApproach())
+						{
+							moveString=moveString + "A ";
+						} else if(clientMove.isWithdraw()){
+							moveString=moveString + "W ";				
+						} else if (clientMove.isPaika()) {
+							moveString=moveString + "P ";
+						} else if(clientMove.isSacrifice()){
+							moveString=moveString + "S ";
+						}
+		               
+						moveString=moveString + clientMove.start.x.toString() + " ";
+						moveString=moveString + clientMove.start.y.toString() + " ";
+						moveString=moveString + clientMove.end.x.toString() + " ";
+						moveString=moveString + clientMove.end.y.toString() + " ";
+						messageStream.print(moveString);
+						messageStream.flush();
+				    	
+				    } else {
+				    	FanoronaGameBoard.Move altMove = actualAI(fg, 1);
+				    	System.out.println("My move: "+altMove.toString());
+						fg.move(altMove);
+						/*generate string to send to client informing it of the move from the AI*/
+						String moveString="";
+						if(altMove.isApproach())
+						{
+							moveString=moveString + "A ";
+						} else if(altMove.isWithdraw()){
+							moveString=moveString + "W ";				
+						} else if (altMove.isPaika()) {
+							moveString=moveString + "P ";
+						} else if(altMove.isSacrifice()){
+							moveString=moveString + "S ";
+						}
+		               
+						moveString=moveString + altMove.start.x.toString() + " ";
+						moveString=moveString + altMove.start.y.toString() + " ";
+						moveString=moveString + altMove.end.x.toString() + " ";
+						moveString=moveString + altMove.end.y.toString() + " ";
+						messageStream.print(moveString);
+						messageStream.flush();
+				    }
 				}
 				
 			}
 			System.out.println("GAME OVER\nWINNER: "+fg.getWinner().toString());
+			
 			gameSocket.close();
 			
 		}catch(UnknownHostException c){
