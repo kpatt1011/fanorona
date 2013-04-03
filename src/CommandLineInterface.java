@@ -9,6 +9,7 @@ class CommandLineInterface
 
     public static void main (String[] args)
     {
+        boolean AI = false;
         CommandLineInterface cli = new CommandLineInterface();
         System.out.println("\n     WELCOME TO FANORONA!\n");
 
@@ -36,6 +37,15 @@ class CommandLineInterface
             strBoardHeight = cli.readLine();
             boardHeight = Integer.parseInt(strBoardHeight);
         }
+        System.out.println();
+
+        // activate AI
+        System.out.print("Do you wish to play against the AI? (y/n): ");
+        String isAI = cli.readLine();
+        if (isAI.equals("y") || isAI.equals("Y"))
+        {
+            AI = true;
+        }
 
         // give help then begin game
         System.out.println("\nThe format for the commands are the same as the format for the server commands listed in Keyser's API.");
@@ -44,7 +54,6 @@ class CommandLineInterface
         System.out.println("     BEGINNING GAME\n");
 
         cli.gameBoard = new FanoronaGameBoard (boardLength, boardHeight);
-
 
 		//build the column numbers string
         String ColumnNumbers = new String ("  ");
@@ -64,7 +73,15 @@ class CommandLineInterface
                 System.out.println(boardList.get(i));
             }
 
-            System.out.print("\nMake your move: ");
+            if (cli.gameBoard.getCurrentPlayer() == FanoronaGameBoard.Player.One)
+            {
+                System.out.print("\nPlayer One: ");
+            }
+            else
+            {
+                System.out.print("\nPlayer Two: ");
+            }
+            System.out.print("Make your move: ");
 
             FanoronaGameBoard.Move userMove = cli.interpretMove(cli.readLine());
 
@@ -86,6 +103,53 @@ class CommandLineInterface
                 System.out.println("You may chain moves.");
                 continue;
             }
+
+            System.out.println("End of your turn.");
+            System.out.println("-------------------------");
+
+            if (cli.gameBoard.isGameOver() == true)
+            {
+                break;
+            }
+            
+            if (AI)
+            {
+                System.out.println("AI is thinking...");
+
+                int depth = 1;
+                MinimaxNode testRoot;
+                if (cli.gameBoard.getCurrentPlayer() == FanoronaGameBoard.Player.Two)
+                {
+                    testRoot = new MaxNode (cli.gameBoard);
+                }
+                else
+                {
+                    testRoot = new MinNode (cli.gameBoard);
+                }
+                MinimaxTree testTree = new MinimaxTree (testRoot, depth);
+
+                //testTree.getIdealMove();
+                //FanoronaGameBoard.Move AImove = null;
+                FanoronaGameBoard.Move AImove = cli.gameBoard.new Move(testTree.getIdealMove());
+
+                moveResult = cli.gameBoard.move(AImove);
+
+                if (moveResult == FanoronaGameBoard.MoveResult.Success)
+                {
+                    cli.gameBoard.pass();
+                }
+            }
+        }
+
+        System.out.println("GAME OVER");
+        System.out.println("The winner is:");
+        if (cli.gameBoard.getWinner() == FanoronaGameBoard.Player.One)
+        {
+            System.out.println("Player One!");
+        }
+        else
+        {
+            System.out.println("Player Two!");
         }
     }
 
