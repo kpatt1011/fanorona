@@ -622,13 +622,18 @@ class FanoronaGameBoard
 		return string;
 	}
 
-	public String toString(String black, String white, String Sacrifice, String Empty)
+	public String toString(String white, String black, String sacrifice, String empty)
 	{
-		String string = toString();
+		String string = "";
 
-		string.replaceAll("●",black);
-		string.replaceAll("○",white);
-		string.replaceAll("▫",empty);
+		for (int i = 0; i < BOARD_LENGTH; i++)
+		{
+			for (int j = 0; j < BOARD_WIDTH; j++ )
+			{
+				string += getPointAt(j,i).toString(white,black,sacrifice,empty) + " ";
+			}
+			string += "\n";
+		}
 
 		return string;
 	}
