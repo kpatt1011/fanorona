@@ -87,6 +87,7 @@ public class SocketMain {
 					if(clientMove.isValid())
 					{
 					fg.move(clientMove);
+					System.out.println(fg.getCurrentPlayer().toString());
 					/*make successive capture moves designated by the client*/
 					if(clientMove.isCapture())
 					{
@@ -118,11 +119,10 @@ public class SocketMain {
 				   * then:
 				   * print the move to the client across the socket
 				   * */
-				FanoronaGameBoard.Move serverMove = actualAI(fg,2);
-				  if(serverMove.isValid())
-				    {
-					  System.out.println("My move: "+serverMove.toString());
-						fg.move(serverMove);
+				FanoronaGameBoard.Move serverMove = actualAI(fg,1);
+				System.out.println("My pieces remaining: "+fg.getNumberPiecesLeft(fg.getCurrentPlayer()));
+				System.out.println("My move: "+serverMove.toString());
+				fg.move(serverMove);
 						/*generate string to send to client informing it of the move from the AI*/
 						String moveString="";
 						if(serverMove.isApproach())
@@ -143,31 +143,8 @@ public class SocketMain {
 						messageStream.print(moveString);
 						messageStream.flush();
 				    	
-				    } else {
-				    	FanoronaGameBoard.Move altMove = actualAI(fg, 1);
-				    	System.out.println("My move: "+altMove.toString());
-						fg.move(altMove);
-						/*generate string to send to client informing it of the move from the AI*/
-						String moveString="";
-						if(altMove.isApproach())
-						{
-							moveString=moveString + "A ";
-						} else if(altMove.isWithdraw()){
-							moveString=moveString + "W ";				
-						} else if (altMove.isPaika()) {
-							moveString=moveString + "P ";
-						} else if(altMove.isSacrifice()){
-							moveString=moveString + "S ";
-						}
-		               
-						moveString=moveString + altMove.start.x.toString() + " ";
-						moveString=moveString + altMove.start.y.toString() + " ";
-						moveString=moveString + altMove.end.x.toString() + " ";
-						moveString=moveString + altMove.end.y.toString() + " ";
-						messageStream.print(moveString);
-						messageStream.flush();
-				    }
-				
+				   
+				System.out.println(fg.toString("w", "b", "s", "e"));
 			}
 
 			server.close();
@@ -244,9 +221,10 @@ public class SocketMain {
 				if(playerNumber.equals("F")|| playerNumber.equals("W"))
 				{
 					/*play game as if it is first person to move*/
-					FanoronaGameBoard.Move clientMove = actualAI(fg,2);
-					 if(clientMove.isValid())
-					    {
+					FanoronaGameBoard.Move clientMove = actualAI(fg,1);
+					System.out.println(fg.getNumberPiecesLeft(fg.getWaitingPlayer()) +" opponents pieces remaining ");
+					System.out.println(fg.getNumberPiecesLeft(fg.getCurrentPlayer())+" my pieces remaining ");
+					//System.out.println(fg.getCurrentPlayer().toString());
 						  System.out.println("My move: "+clientMove.toString());
 							fg.move(clientMove);
 							/*generate string to send to client informing it of the move from the AI*/
@@ -269,31 +247,7 @@ public class SocketMain {
 							messageStream.print(moveString);
 							messageStream.flush();
 					    	
-					    } else {
-					    	FanoronaGameBoard.Move altMove = actualAI(fg, 1);
-					    	System.out.println("My move: "+altMove.toString());
-							fg.move(altMove);
-							/*generate string to send to client informing it of the move from the AI*/
-							String moveString="";
-							if(altMove.isApproach())
-							{
-								moveString=moveString + "A ";
-							} else if(altMove.isWithdraw()){
-								moveString=moveString + "W ";				
-							} else if (altMove.isPaika()) {
-								moveString=moveString + "P ";
-							} else if(altMove.isSacrifice()){
-								moveString=moveString + "S ";
-							}
-			               
-							moveString=moveString + altMove.start.x.toString() + " ";
-							moveString=moveString + altMove.start.y.toString() + " ";
-							moveString=moveString + altMove.end.x.toString() + " ";
-							moveString=moveString + altMove.end.y.toString() + " ";
-							messageStream.print(moveString);
-							messageStream.flush();
-					    }
-					
+					 
 					/*get move from server and apply it to the board*/
 
 					socketInput.read(buffer,0,1024);
@@ -360,8 +314,7 @@ public class SocketMain {
 					/*play game as if it is the second person to move*/
 					/*get move from server and apply it to the board*/
 					socketInput.read(buffer,0,1024);
-					serverResponse= new String(buffer);
-					
+					serverResponse= new String(buffer);		
 					long elapsedTime =0;
 					/*measure time between 'OK' response from server and the move from the server*/
 					if(serverResponse.equals("OK"))
@@ -386,7 +339,9 @@ public class SocketMain {
 						Coordinate start = new Coordinate(Character.getNumericValue(serverResponse.charAt(2)), Character.getNumericValue(serverResponse.charAt(4)) );
 						Coordinate end = new Coordinate(Character.getNumericValue(serverResponse.charAt(6)), Character.getNumericValue(serverResponse.charAt(8)) );
 						FanoronaGameBoard.Move serverMove = fg.new Move(start,end);
+						//System.out.println(fg.getCurrentPlayer().toString());
 						System.out.println("Opponent Move: "+serverMove.toString());
+						
 						if(serverMove.isValid())
 						{
 						fg.move(serverMove);
@@ -418,11 +373,11 @@ public class SocketMain {
 						}
 					}
 					/*once server move is complete, make AI move*/
-					FanoronaGameBoard.Move clientMove = actualAI(fg,2);
-					if(clientMove.isValid())
-				    {
+					FanoronaGameBoard.Move clientMove = actualAI(fg,1);
+					
 					  System.out.println("My move: "+clientMove.toString());
 						fg.move(clientMove);
+						//System.out.println(fg.getCurrentPlayer().toString());
 						/*generate string to send to client informing it of the move from the AI*/
 						String moveString="";
 						if(clientMove.isApproach())
@@ -442,33 +397,8 @@ public class SocketMain {
 						moveString=moveString + clientMove.end.y.toString() + " ";
 						messageStream.print(moveString);
 						messageStream.flush();
-				    	
-				    } else {
-				    	FanoronaGameBoard.Move altMove = actualAI(fg, 1);
-				    	System.out.println("My move: "+altMove.toString());
-						fg.move(altMove);
-						/*generate string to send to client informing it of the move from the AI*/
-						String moveString="";
-						if(altMove.isApproach())
-						{
-							moveString=moveString + "A ";
-						} else if(altMove.isWithdraw()){
-							moveString=moveString + "W ";				
-						} else if (altMove.isPaika()) {
-							moveString=moveString + "P ";
-						} else if(altMove.isSacrifice()){
-							moveString=moveString + "S ";
-						}
-		               
-						moveString=moveString + altMove.start.x.toString() + " ";
-						moveString=moveString + altMove.start.y.toString() + " ";
-						moveString=moveString + altMove.end.x.toString() + " ";
-						moveString=moveString + altMove.end.y.toString() + " ";
-						messageStream.print(moveString);
-						messageStream.flush();
-				    }
 				}
-				
+				System.out.println(fg.toString("w", "b", "s", "e"));
 			}
 			System.out.println("GAME OVER\nWINNER: "+fg.getWinner().toString());
 			
@@ -493,6 +423,7 @@ public class SocketMain {
 			{
             return testTree.getIdealMove();
 			} else{
+				testRoot = new MaxNode (fgb);
 				testTree= new MinimaxTree (testRoot,1);
 				return testTree.getIdealMove();
 			}
